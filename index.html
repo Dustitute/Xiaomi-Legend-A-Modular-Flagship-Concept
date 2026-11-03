@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xiaomi Legend · 一环，万象</title>
+<meta name="description" content="Xiaomi Legend 旗舰模块化智能手机概念页：LaserLink 10Gbps 光通信、八个可换模块、翻转屏三形态、M4/3 影像模块。本页面为产品概念展示，非商业发布。">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/png" sizes="128x128" href="assets/icons/favicon-128.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon-180.png">
+
+<!-- ============================================================
+优化版（optimized）
+· 外链化：CSS / JS / 图片 / 字体 / 影片全部拆到 assets/，HTML 约 80KB
+  （拆分前的单文件版约 9.6MB，含内嵌 30 秒影片，见 Xiaomi-Legend-内嵌版.zip）
+· 早先相对 Xiaomi-Legend-single.html 的优化：体积 7.06MB -> 约 5.5MB
+  - 首屏精灵图探测改成 1×1 极小 WebP（原来把 431KB 的帧序列图当 probe 用，白存一份）
+  - 模块缩略图不再另存 base64，详情面板直接复用卡片里那张同图（省 380KB）
+  - 3 张 JPEG / 2 张 PNG 转 WebP（近无损，视觉一致）
+· 运行时
+  - LaserLink 环高光的 rAF 收敛到阈值即停帧（原来首次移动鼠标后永久空转）
+  - 滚轮「三段卡位」坐标缓存，只在 resize / 字体图片就绪 / ScrollTrigger.refresh 后重算
+  - S4 透视视差、S9 卡片边缘光、尾声星场：指针热路径不再逐事件读布局
+· 结构与可访问性
+  - 6 个外链脚本加 defer（不再阻塞文档解析）
+  - 购买流程弹窗标题 h1 -> h2（整页只保留 1 个 h1）
+  - window.__ORBIT / __FLIP / __S7viewer 收进 Legend.debug
+  - 清理死代码、过时的 -webkit-overflow-scrolling
+============================================================ -->
+<!-- ============================================================
+Xiaomi Legend · 单页概念站
+· 纯 HTML + CSS + JS，无框架；动画由 GSAP + ScrollTrigger 驱动（本地 assets/vendor）
+· 资源全部外链：assets/css、assets/js、assets/img、assets/fonts、assets/media
+· 结构：页眉 / Hero + LaserLink（深色滚动叙事）/ 规格（白）/ 模块 / 机身 / 模块过渡页（orbit）/ 翻转屏 /
+  影像 / 智能终端 / 打印机（白）/ 其余模块 / 尾声（题眼 → 机身余像 3D → 致谢 → 留白）/ 页脚
+· 尾声余像：assets/Legend_v2.glb.b64.js（Legend_v2.glb 的 base64），Draco 主线程解码，懒加载
+· 图片：assets/img/ 下的 WebP（透明背景产品渲染），缺失时由 .media 渐变兜底
+· 性能：字体 preconnect、图片 lazy/async、动画只用 transform/opacity、移动端降级 3D
+============================================================ -->
+
+<!-- 字体：英文 Inter（本地 woff2，避免外部字体阻塞首屏）；中文走小米兰亭 / MiSans / 苹方 / 微软雅黑 -->
+<!-- 动画库：GSAP 3.12 + ScrollTrigger（本地 assets/vendor，离线可用） -->
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+
+<!-- ======================== 全局脚本：Legend API（供 fragment 调用） ======================== -->
+<script src="assets/js/legend-api.js"></script>
+
+<script src="assets/js/js-flag.js"></script>
+
+<link rel="stylesheet" href="assets/css/legend.css">
+
+</head>
+<body>
+
+<!-- ======================== 页眉（小米官网结构，文字保留、不可跳转） ======================== -->
+<header id="site-header" class="site-header">
+<div class="utility">
+<div class="wrap">
+<div class="u-links">
+<span class="u-link">小米官网</span>
+<span class="u-link">小米商城</span>
+<span class="u-link">小米澎湃OS</span>
+<span class="u-link">小米汽车</span>
+<span class="u-link">云服务</span>
+<span class="u-link">IoT</span>
+<span class="u-link">有品</span>
+<span class="u-link">小爱开放平台</span>
+<span class="u-link">资质证照</span>
+<span class="u-link">协议规则</span>
+<span class="u-link">下载app</span>
+</div>
+<div class="u-right">
+<span class="u-link">登录</span>
+<span class="u-link">注册</span>
+<span class="u-link">消息通知</span>
+<span class="u-link u-cart">购物车（<b>0</b>）</span>
+</div>
+</div>
+</div>
+<div class="mainnav">
+<div class="wrap">
+<span class="mi-logo" aria-label="小米"><img src="assets/img/01a2c4db88.webp" alt="mi" width="42" height="42" decoding="async"></span>
+<nav class="nav" aria-label="商品分类">
+<span class="nav-link">全部商品分类</span>
+<span class="nav-link">Xiaomi手机</span>
+<span class="nav-link">REDMI手机</span>
+<span class="nav-link">电视</span>
+<span class="nav-link">笔记本</span>
+<span class="nav-link">平板</span>
+<span class="nav-link">家电</span>
+<span class="nav-link">路由器</span>
+<span class="nav-link">服务中心</span>
+<span class="nav-link">社区</span>
+</nav>
+<div class="nav-tools">
+<span class="search" role="search" aria-label="搜索">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+<span>搜索 Xiaomi Legend</span>
+</span>
+<span class="tool-link">
+<span class="tool-icon" aria-hidden="true">
+<svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M3 4h2.2l2.1 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 8H6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.4" fill="currentColor"/><circle cx="17.5" cy="20" r="1.4" fill="currentColor"/></svg>
+</span>
+购物车
+</span>
+<span class="burger" aria-hidden="true"><i></i></span>
+</div>
+</div>
+</div>
+<div class="subnav">
+<div class="wrap">
+<span class="subnav-name">Xiaomi Legend</span>
+<div class="subnav-links">
+<span class="subnav-link">概述页</span>
+<span class="subnav-link">参数页</span>
+<span class="subnav-link">F码通道</span>
+<span class="subnav-link">咨询客服</span>
+<span class="subnav-link">用户评价</span>
+<a class="subnav-buy" href="#buy" aria-haspopup="dialog" aria-label="打开 Xiaomi Legend 立即购买流程">立即购买</a>
+</div>
+</div>
+</div>
+</header>
+
+<main id="main">
+
+<!-- ======================== 1 + 2：Hero / 万物互联 · LaserLink ======================== -->
+<div id="intro" class="intro">
+<div class="intro-stage">
+<div class="intro-grid" aria-hidden="true"></div>
+<div class="intro-glow intro-glow--a" aria-hidden="true"></div>
+<div class="intro-glow intro-glow--b" aria-hidden="true"></div>
+<div class="intro-vignette" aria-hidden="true"></div>
+
+<!-- Hero -->
+<section id="hero" class="hero" aria-label="Xiaomi Legend 开场">
+<div class="hero-inner">
+<p class="hero-eyebrow" data-hero-fade>Xiaomi Legend · 模块化旗舰</p>
+<h1 class="hero-title" data-hero-title aria-label="Legend">
+<span class="hero-title-word" data-word="Leg">Leg</span>
+<span class="hero-title-word" data-word="end">end</span>
+</h1>
+</div>
+<div class="hero-subs">
+<p class="hero-sub hero-sub--l" data-hero-fade><span class="hero-sub-l">一环</span></p>
+<p class="hero-sub hero-sub--r" data-hero-fade><span class="hero-sub-r">万象</span></p>
+</div>
+
+<div class="hero-phone" data-hero-phone>
+<div class="hero-halo" aria-hidden="true"></div>
+<div class="hero-phone-fallback" aria-hidden="true"></div>
+<!-- 真实产品渲染图（透明 WebP）；缺失时由上方剪影兜底 -->
+<img class="hero-img hero-img--lit" src="assets/img/b571d5a5e6.webp" alt="Xiaomi Legend 背面：钛金属中框、小米龙鳞纤维后盖与 LaserLink 传输环" width="1400" height="1700" decoding="async" fetchpriority="high" onerror="this.closest('.hero-phone').classList.add('no-img');this.remove()">
+<img class="hero-img hero-img--flat" src="assets/img/d387b93331.webp" alt="" aria-hidden="true" width="1200" height="1500" loading="lazy" decoding="async" onerror="this.remove()">
+<img class="hero-img hero-img--dark" src="assets/img/78559c1548.webp" alt="" aria-hidden="true" width="1200" height="1500" loading="lazy" decoding="async" onerror="this.remove()">
+<!-- 真实 3D 转身：序列帧（斜 3/4 → 正背面）+ 正背面暗部图（与末帧同机位） -->
+<div class="hero-turn" aria-hidden="true"></div>
+<img class="hero-img hero-img--straight-dark" src="assets/img/fd9fd014c6.webp" alt="" aria-hidden="true" width="1400" height="1700" loading="lazy" decoding="async" onerror="this.remove()">
+<div class="hero-phone-veil" aria-hidden="true"></div>
+<!-- 模组 deco / 镜头 / Mi 标轮廓：坐标取自 Legend.glb 最终正背面帧（700×850） -->
+<svg class="hero-module-lines" viewBox="0 0 700 850" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+<rect x="176" y="87" width="356" height="193" rx="26" fill="rgb(0, 0, 0)"/>
+<g fill="none" stroke="currentColor" stroke-width="2">
+<rect x="176" y="87" width="356" height="193" rx="26"/>
+<circle cx="229" cy="141.6" r="38"/>
+<circle cx="314" cy="141.6" r="38"/>
+<circle cx="229" cy="225.4" r="38"/>
+<circle cx="314" cy="225.4" r="38"/>
+<rect x="385" y="125" width="109" height="108" rx="35"/>
+</g>
+</svg>
+<!-- LaserLink 环（暗部轮廓上的发光环） -->
+<div class="laser-ring" aria-hidden="true"><div class="laser-ring-aim"><span class="aim-layer aim-default"></span><span class="aim-layer aim-blue"></span><span class="aim-layer aim-red"></span><span class="aim-layer aim-gold"></span></div></div>
+<div class="laser-pins" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div class="laser-sidepins" aria-hidden="true"><i></i><i></i></div>
+<div class="laser-opt" aria-hidden="true"></div>
+</div>
+
+<div class="hero-bottom" data-hero-fade></div>
+</section>
+
+<!-- LaserLink -->
+<section id="laser" class="laser" aria-labelledby="laser-title">
+<div class="laser-stage">
+<!-- 移动端专用：正背面手机 + 常亮环 -->
+<div class="laser-visual" aria-hidden="true">
+<img class="lv-img" src="assets/img/3f2befdc2f.webp" alt="" loading="lazy" width="1200" height="1500" decoding="async" onerror="this.remove()">
+<div class="laser-ring"><div class="laser-ring-aim"><span class="aim-layer aim-default"></span><span class="aim-layer aim-blue"></span><span class="aim-layer aim-red"></span><span class="aim-layer aim-gold"></span></div></div>
+<svg class="lv-module-lines" viewBox="0 0 1200 1500" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">
+<rect x="289" y="154" width="623" height="332" rx="44" fill="rgb(0, 0, 0)"/>
+<g fill="none" stroke="currentColor" stroke-width="7">
+<rect x="289" y="154" width="623" height="332" rx="44"/>
+<circle cx="388" cy="248" r="65"/>
+<circle cx="536" cy="248" r="65"/>
+<circle cx="388" cy="392" r="65"/>
+<circle cx="536" cy="392" r="65"/>
+<rect x="662" y="228" width="188" height="186" rx="60"/>
+</g>
+</svg>
+<div class="laser-pins"><i></i><i></i><i></i><i></i></div>
+<div class="laser-sidepins"><i></i><i></i></div>
+<div class="laser-opt"></div>
+</div>
+
+<div class="laser-copy">
+<p class="eyebrow" data-laser-el>MODULAR DESIGN · 模块化设计</p>
+<h2 class="laser-title" id="laser-title" data-laser-el>万象环<br>开启更多可能</h2>
+<p class="laser-lede" data-laser-el>
+它不只是背部的设计符号，更是 Legend 模块生态的起点。从影像创作到性能与续航，再到桌面和家庭场景，让一台手机根据你的需求，拥有不同的能力。
+</p>
+<div class="laser-mods" data-laser-el>
+<div class="laser-mod" data-tone="blue">
+<span class="laser-mod-num">01</span>
+<span class="laser-mod-title">影像创作</span>
+<span class="laser-mod-sub">扩展专业拍摄能力</span>
+</div>
+<div class="laser-mod" data-tone="red">
+<span class="laser-mod-num">02</span>
+<span class="laser-mod-title">性能续航</span>
+<span class="laser-mod-sub">应对长时间高负载</span>
+</div>
+<div class="laser-mod" data-tone="gold">
+<span class="laser-mod-num">03</span>
+<span class="laser-mod-title">场景延伸</span>
+<span class="laser-mod-sub">从掌上走向桌面与家庭</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+
+
+<!-- ===== fragments/sec-specs.html ===== -->
+
+
+<section id="specs" class="sec is-light s3-specs" aria-labelledby="specs-title">
+<div class="wrap">
+<div class="s3-grid">
+<!-- 左：sticky 标题 + 视觉锚点 -->
+<aside class="s3-side">
+<div class="s3-side-inner">
+<p class="eyebrow" data-reveal>SPECIFICATIONS</p>
+<h2 class="h2" id="specs-title" data-reveal style="white-space:nowrap">规格，是底气。</h2>
+<p class="lede s3-lede" data-reveal>不靠形容词撑场面。八项规格写在这里——<br>这是 Legend 敢把自己叫旗舰的原因。</p>
+
+<!-- 玄戒 O5 宣传图（360° 转盘移至下方展示区） -->
+<figure class="s3-turn s3-xring" data-reveal>
+<img src="assets/img/c78b575121.webp"
+alt="玄戒 O5 芯片"
+loading="lazy" decoding="async" width="412" height="569"
+draggable="false" onerror="this.remove()">
+
+</figure>
+</div>
+</aside>
+
+<!-- 右：八组参数 -->
+<div class="s3-list" role="list">
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">01</span>
+<span class="s3-k"><span class="s3-k-zh">屏幕</span><span class="s3-k-en">DISPLAY</span></span>
+<span class="s3-fig">6.82<span class="s3-unit">″</span></span>
+<span class="s3-desc">2K AMOLED · 16:9
+<span class="s3-note">最高185Hz刷新率 · 超级像素排列 · 小米龙晶玻璃</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">02</span>
+<span class="s3-k"><span class="s3-k-zh">芯片</span><span class="s3-k-en">CHIPSET</span></span>
+<span class="s3-fig">玄戒 O5</span>
+<span class="s3-desc">十核 3nm 旗舰处理器
+<span class="s3-note">自研 SoC · 端侧 AI 算力</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">03</span>
+<span class="s3-k"><span class="s3-k-zh">内存</span><span class="s3-k-en">MEMORY</span></span>
+<span class="s3-fig">最高24<span class="s3-unit">GB</span></span>
+<span class="s3-desc">LPDDR5X / LPDDR6
+<span class="s3-note">16GB / 24GB 双容量可选</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">04</span>
+<span class="s3-k"><span class="s3-k-zh">电池</span><span class="s3-k-en">BATTERY</span></span>
+<span class="s3-fig">9000<span class="s3-unit">mAh</span></span>
+<span class="s3-desc">100W 有线 · 50W 触点
+<span class="s3-note">小米金沙江高密度电池</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">05</span>
+<span class="s3-k"><span class="s3-k-zh">影像</span><span class="s3-k-en">CAMERA</span></span>
+<span class="s3-fig">徕卡三摄</span>
+<span class="s3-desc">1/1.12″ LOFIC 主摄
+<span class="s3-note">1/1.56″ 3.2X 长焦 · 1/2″ 12mm 超广角 <br> 徕卡联合调校</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">06</span>
+<span class="s3-k"><span class="s3-k-zh">材质</span><span class="s3-k-en">MATERIAL</span></span>
+<span class="s3-fig">7 系铝合金</span>
+<span class="s3-desc">硬质阳极氧化中框
+<span class="s3-note">小米龙鳞纤维 · 氧化锆陶瓷</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">07</span>
+<span class="s3-k"><span class="s3-k-zh">影音</span><span class="s3-k-en">AUDIO</span></span>
+<span class="s3-fig">2.1<span class="s3-unit">声道</span></span>
+<span class="s3-desc">双 1115E + 1620C
+<span class="s3-note">0916C X线性马达 · 三扬声器豪华阵容<br>低音辐射振膜</span>
+</span>
+</div>
+
+<div class="s3-row" role="listitem">
+<span class="s3-idx" aria-hidden="true">08</span>
+<span class="s3-k"><span class="s3-k-zh">模块接口</span><span class="s3-k-en">MODULE BUS</span></span>
+<span class="s3-fig">万象环</span>
+<span class="s3-desc">10Gbps 光通信
+<span class="s3-note">延迟 ≤20ns · 4pin 通用触点 · 表面蓝宝石镀层</span>
+</span>
+</div>
+</div>
+</div>
+
+<!-- 收尾：宣言 + 正面视觉锚点 -->
+<div class="s3-hero">
+<div class="s3-hero-copy">
+<p class="s3-quote" data-reveal>不计成本，<br>为<em>极客与创作者</em>打造的<br>模块化旗舰。</p>
+</div>
+<!-- 360° 展示：Three.js GLB 实时渲染，可自由拖拽旋转 -->
+<div class="s3-turn s3-turn--hero" data-hero3d data-reveal>
+<div class="hero3d" data-hero3d-stage tabindex="0" role="img" aria-label="Xiaomi Legend 机身三维模型，可拖动或使用方向键自由旋转">
+<img class="hero3d-poster" src="assets/renders/hero3d-poster.webp?v=20261030b" alt="" aria-hidden="true" width="1360" height="1360" decoding="async" draggable="false">
+<div class="hero3d-mount" data-hero3d-mount aria-hidden="true"></div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- 3D 展示依赖：经典脚本（file:// 直接双击打开也能加载）+ GLB base64 载荷 -->
+<script defer src="assets/vendor/legend-3d-bundle.js"></script>
+<script defer src="assets/Legend.glb.b64.js?v=20261030b"></script>
+<script src="assets/js/specs.js"></script>
+
+<!-- ===== fragments/sec-modules.html ===== -->
+
+
+<section id="modules" class="sec s4-modules" aria-labelledby="modules-title">
+<!-- 氛围背景 -->
+<div class="s4-bg" aria-hidden="true">
+<div class="s4-glow s4-glow--a"></div>
+<div class="s4-glow s4-glow--b"></div>
+<div class="s4-grid-lines"></div>
+</div>
+
+<!-- 区块头 -->
+<div class="wrap">
+<header class="s4-head">
+<p class="eyebrow" data-reveal>MODULAR ECOSYSTEM</p>
+<h2 class="h2" id="modules-title" data-reveal>八个模块，一台 <em class="s4-accent">Legend</em></h2>
+<p class="lede s4-lede" data-reveal>
+从影像创作到双屏工作，从随身续航到家庭互联。<br>八个扩展模块，按需选择，自由切换。
+</p>
+</header>
+</div>
+
+<!-- 舞台：静态时是网格；JS 增强后桌面为伪 3D 圆柱、移动端为横向 snap 卡带 -->
+<div class="s4-stage">
+<div class="s4-scene">
+<div class="s4-cylinder" data-s4-cylinder>
+<!-- 01 散热 -->
+<div class="s4-seat" style="--a:0deg" data-index="0">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="cooling" aria-haspopup="dialog"
+aria-label="散热模块：冷静，是性能的底气，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">01</span><span class="s4-card-tag">COOLING</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/2b1e9a2ae1.webp" alt="小米 Legend 散热模块渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">散热模块</span>
+<span class="s4-card-line">冷静，是性能的底气</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 02 外挂电池 -->
+<div class="s4-seat" style="--a:45deg" data-index="1">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="battery" aria-haspopup="dialog"
+aria-label="外挂电池：把续航焦虑，留给昨天，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">02</span><span class="s4-card-tag">BATTERY</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/fcc265051d.webp" alt="小米 Legend 外挂电池模块渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">外挂电池</span>
+<span class="s4-card-line">把续航焦虑，留给昨天</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 03 磁吸麦克风 -->
+<div class="s4-seat" style="--a:90deg" data-index="2">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="mic" aria-haspopup="dialog"
+aria-label="磁吸麦克风：轻若无物，声声清晰，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">03</span><span class="s4-card-tag">MIC</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/d52875da07.webp" alt="小米 Legend 磁吸麦克风渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">磁吸麦克风</span>
+<span class="s4-card-line">轻若无物，声声清晰</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 04 打印机 -->
+<div class="s4-seat" style="--a:135deg" data-index="3">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="printer" aria-haspopup="dialog"
+aria-label="打印机模块：从像素，到纸间，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">04</span><span class="s4-card-tag">PRINTER</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/bb218741f8.webp" alt="小米 Legend 打印机模块渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">打印机模块</span>
+<span class="s4-card-line">从像素，到纸间</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 05 智能终端 -->
+<div class="s4-seat" style="--a:180deg" data-index="4">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="terminal" aria-haspopup="dialog"
+aria-label="智能终端模块：落座，连接桌面与家庭，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">05</span><span class="s4-card-tag">TERMINAL</span></span>
+<span class="s4-card-media media">
+<img class="is-terminal" src="assets/img/64b97aebd7.webp" alt="小米 Legend 智能终端模块渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">智能终端模块</span>
+<span class="s4-card-line">落座，连接桌面与家庭</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 06 翻转屏 -->
+<div class="s4-seat" style="--a:225deg" data-index="5">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="flip" aria-haspopup="dialog"
+aria-label="翻转屏模块：翻一面，见万象，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">06</span><span class="s4-card-tag">FLIP</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/9d1970da25.webp" alt="小米 Legend 翻转屏模块渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">翻转屏模块</span>
+<span class="s4-card-line">翻一面，见万象</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 07 模块光学系统 -->
+<div class="s4-seat" style="--a:270deg" data-index="6">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="optics" aria-haspopup="dialog"
+aria-label="模块光学系统：口袋里的微单相机，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">07</span><span class="s4-card-tag">OPTICS</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/d131215750.webp" alt="小米模块光学系统渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">模块光学系统</span>
+<span class="s4-card-line">口袋里的微单相机</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+<!-- 08 摄影手柄 -->
+<div class="s4-seat" style="--a:315deg" data-index="7">
+<div class="s4-fly">
+<button type="button" class="s4-card" data-module="grip" aria-haspopup="dialog"
+aria-label="摄影手柄：握住的，是创作的形状，打开详情">
+<span class="s4-card-top"><span class="s4-card-num">08</span><span class="s4-card-tag">GRIP</span></span>
+<span class="s4-card-media media">
+<img src="assets/img/f0f0299437.webp" alt="小米 Legend 摄影手柄渲染图"
+loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</span>
+<span class="s4-card-body">
+<span class="s4-card-name">摄影手柄</span>
+<span class="s4-card-line">握住的，是创作的形状</span>
+</span>
+<span class="s4-card-foot"><span class="s4-card-cta">查看详情</span><span class="s4-card-arrow" aria-hidden="true">→</span></span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 控制条与提示 -->
+<div class="wrap">
+<div class="s4-controls" role="group" aria-label="模块转盘控制">
+<button type="button" class="s4-nav s4-nav-prev" aria-label="上一个模块">
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="s4-dots">
+<button type="button" class="s4-dot" aria-label="转到散热模块"></button>
+<button type="button" class="s4-dot" aria-label="转到外挂电池"></button>
+<button type="button" class="s4-dot" aria-label="转到磁吸麦克风"></button>
+<button type="button" class="s4-dot" aria-label="转到打印机模块"></button>
+<button type="button" class="s4-dot" aria-label="转到智能终端模块"></button>
+<button type="button" class="s4-dot" aria-label="转到翻转屏模块"></button>
+<button type="button" class="s4-dot" aria-label="转到模块光学系统"></button>
+<button type="button" class="s4-dot" aria-label="转到摄影手柄"></button>
+</div>
+<button type="button" class="s4-nav s4-nav-next" aria-label="下一个模块">
+<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+</div>
+<p class="s4-hint" data-s4-hint>拖动旋转 · 点击卡片展开详情</p>
+</div>
+
+<!-- 详情面板：JS 初始化时移动到 <body>，保证 fixed 覆盖整页且不受区块 transform 影响 -->
+<div class="s4-detail" role="dialog" aria-modal="true" aria-labelledby="s4-detail-title"
+aria-hidden="true" data-s4-detail>
+<div class="s4-detail-backdrop" data-s4-backdrop></div>
+<div class="s4-detail-sheet" data-s4-sheet>
+<div class="s4-detail-inner">
+<button type="button" class="s4-detail-close" data-s4-close aria-label="关闭模块详情">
+<span class="s4-close-circle" aria-hidden="true">
+<svg viewBox="0 0 24 24" fill="none"><path d="M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+</span>
+</button>
+<div class="s4-detail-grid">
+<div class="s4-detail-visual">
+<div class="s4-tt-stage">
+<div class="s4-tt" data-s4-tt role="img" tabindex="0"
+aria-label="模块 360 度转盘：左右拖动或使用方向键旋转"></div>
+<img class="s4-tt-fallback" data-s4-tt-fallback alt="" loading="lazy" decoding="async" width="1000" height="1000" onerror="this.remove()">
+</div>
+<div class="s4-tt-ticks" data-s4-ticks aria-hidden="true">
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+</div>
+<p class="s4-tt-hint" data-s4-tt-hint hidden></p>
+</div>
+<div class="s4-detail-copy">
+<p class="s4-detail-eyebrow" data-s4-eyebrow>MODULE 01 · COOLING</p>
+<h3 class="s4-detail-title" id="s4-detail-title" data-s4-title>散热模块</h3>
+<p class="s4-detail-line" data-s4-line>冷静，是性能的底气</p>
+<p class="s4-detail-desc" data-s4-desc></p>
+<ul class="s4-detail-specs" data-s4-specs></ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<script src="assets/js/modules.js"></script>
+
+
+<!-- ===== fragments/sec-body.html ===== -->
+
+
+<section id="phone-body" class="s9-body" aria-labelledby="s9-title">
+<div class="wrap">
+<header class="s9-head" data-reveal>
+<p class="s9-eyebrow">Xiaomi Legend · Body</p>
+<h2 class="s9-title" id="s9-title">独立即为<em>旗舰</em><br>连接更多可能</h2>
+</header>
+
+<div class="s9-banner s9-glow-card" data-reveal>
+<div class="s9-banner-copy">
+<p class="k">Flagship Core</p>
+<h3>一体精工<br>完整旗舰</h3>
+</div>
+<div class="s9-banner-media">
+<!-- 透明底竖构图整机：宽 min(100%,300px)，高度自适应，保留投影 -->
+<img src="assets/img/efdc41d786.webp" alt="Xiaomi Legend 机身 3/4 视角"
+loading="lazy" decoding="async" width="1100" height="1400" onerror="this.remove()">
+</div>
+<ul class="s9-banner-points">
+<li>旗舰芯片与端侧 AI 算力</li>
+<li>徕卡三摄影像系统</li>
+<li>超长续航 · 极速回电</li>
+<li>IP68 防尘防水等级</li>
+</ul>
+</div>
+
+<!-- 影像：旗舰三摄 -->
+<article class="s9-feat s9-feat--camera" data-reveal>
+<div class="s9-feat-main">
+<div class="s9-feat-copy">
+<p class="s9-kicker"><span>CAMERA</span> · 徕卡联合调校</p>
+<h3>从 12mm 到 75mm，<br>一整套焦段。</h3>
+<p class="s9-feat-lede">1/1.12″ LOFIC 主摄、3.2× 潜望长焦、0.5× 超广角。三颗镜头各司其职，徕卡联合调校把色彩、镜头与计算摄影一起校准。</p>
+<div class="s9-feat-badges">
+<span>双2亿像素</span>
+<span>约 17 档单帧动态范围</span>
+<span>12.8× 光学变焦</span>
+</div>
+</div>
+<div class="s9-feat-visual">
+<img src="assets/img/1ba4fc9dcf.webp" alt="Xiaomi Legend 后置镜头模组（Legend GLB 实时渲染）"
+loading="lazy" decoding="async" width="1400" height="720" onerror="this.remove()">
+</div>
+</div>
+<div class="s9-lenses">
+<div class="s9-lens">
+<span class="s9-lens-mm">23mm</span>
+<b>LOFIC 主摄</b>
+<em>1/1.12″ · 200MP · f/1.4</em>
+</div>
+<div class="s9-lens">
+<span class="s9-lens-mm">75mm</span>
+<b>潜望长焦</b>
+<em>1/1.56″ · 200MP · 微距</em>
+</div>
+<div class="s9-lens">
+<span class="s9-lens-mm">12mm</span>
+<b>超广角</b>
+<em>1/2″ · 50MP · 微距</em>
+</div>
+</div>
+</article>
+<!-- 屏幕：通栏 -->
+<article class="s9-feat s9-feat--camera s9-feat--display-full" data-reveal>
+<div class="s9-feat-main">
+<div class="s9-feat-copy">
+<p class="s9-kicker"><span>DISPLAY</span> · 16:9 2K屏</p>
+<h3>正面，<br>只剩<em>画面</em>。</h3>
+<p class="s9-feat-lede">搭载 16:9 比例的 6.82 英寸 OLED 屏幕，采用华星光电最新 M13 发光基材，刷新率最高可达 185Hz 。黑边压到 1mm 以内，前摄藏进屏下，正面只剩一块完整的画面。</p>
+</div>
+<div class="s9-feat-visual">
+<img src="assets/img/e3967b39ae.webp" alt="Xiaomi Legend 正面屏幕 · 横置展示（Legend GLB 实时渲染）"
+loading="lazy" decoding="async" width="920" height="548" onerror="this.remove()">
+</div>
+</div>
+<div class="s9-specs4">
+<div><b>6.82″</b><span>2K LTPO OLED</span></div>
+<div><b>2560×1440<i class="s9-pix-badge">超级像素</i></b><span>分辨率</span></div>
+<div><b>185Hz</b><span>最高刷新率</span></div>
+<div><b>0.9mm</b><span>极窄黑边</span></div>
+</div>
+</article>
+
+<!-- 芯片 / 电池 -->
+<div class="s9-duo--small">
+<article class="s9-feat s9-feat--small s9-feat--chip-small" data-reveal>
+<div class="s9-small-grid">
+<div class="s9-small-copy">
+<p class="s9-kicker"><span>CHIPSET</span> · XRING O5</p>
+<h3>玄戒 O5<br>AI 旗舰处理器</h3>
+<p class="s9-feat-lede">10 核全大核 CPU、16 核超大规模 GPU；第六代 ISP，为端侧AI 深度优化的NPU。</p>
+<div class="s9-small-specs">
+<div><b>300亿</b><span>晶体管</span></div>
+<div><b>4.9GHz</b><span>最高主频</span></div>
+<div><b>10核3丛集</b><span>全大核架构</span></div>
+<div><b>24MB</b><span>共享L3</span></div>
+</div>
+</div>
+<div class="s9-small-media">
+<img src="assets/img/1051d3db04.webp" alt="玄戒 O5 芯片"
+loading="lazy" decoding="async" width="471" height="471" onerror="this.remove()">
+</div>
+</div>
+</article>
+
+<article class="s9-feat s9-feat--small s9-feat--battery-small" data-reveal>
+<p class="s9-kicker"><span>BATTERY</span> · 9000mAh</p>
+<p class="s9-battery-big">9000<small>mAh</small></p>
+<p class="s9-battery-cap">100W 有线闪充 · 叠片电池工艺<br>大容量，融入 8.2mm 机身。</p>
+<div class="s9-battery-specs">
+<span><b>100W</b> 有线</span>
+<span><b>50W</b> 触点</span>
+<span><b>980Wh/L</b> 能量密度</span>
+</div>
+<div class="s9-battery-media">
+<img src="assets/img/745714ea54.webp" alt="Xiaomi Legend 侧面厚度"
+loading="lazy" decoding="async" width="1240" height="200" onerror="this.remove()">
+</div>
+</article>
+</div>
+</div>
+</section>
+
+<script src="assets/js/body.js"></script>
+
+
+<!-- ===== fragments/sec-orbit.html ===== -->
+
+
+<section id="orbit" class="sec orb" aria-labelledby="orb-title">
+<div class="orb-scene">
+
+<div class="orb-stage" data-orb-stage>
+<ul class="orb-ring" data-orb-ring aria-label="Legend 模块">
+<li data-mod="grip" data-halo="assets/img/76c6d66dd0.webp"><img src="assets/img/14357ce6b0.webp" alt="摄影手柄 · GRIP" width="202" height="300" decoding="async"></li>
+<li data-mod="cooling" data-halo="assets/img/b396d8b025.webp"><img src="assets/img/bb9c6038ef.webp" alt="散热模块 · COOLING" width="284" height="300" decoding="async"></li>
+<li data-mod="optics" data-halo="assets/img/8f95074da3.webp"><img src="assets/img/bacd5b0ed4.webp" alt="光学模块 · OPTICS" width="300" height="295" decoding="async"></li>
+<li data-mod="mic" data-halo="assets/img/3492051ea2.webp"><img src="assets/img/27482ddede.webp" alt="磁吸麦克风 · MIC" width="288" height="300" decoding="async"></li>
+<li data-mod="terminal" data-halo="assets/img/8194a36c21.webp"><img src="assets/img/0269471ed5.webp" alt="智能终端 · TERMINAL" width="277" height="300" decoding="async"></li>
+<li data-mod="printer" data-halo="assets/img/d204ce3627.webp"><img src="assets/img/d1b3d17d6e.webp" alt="打印机 · PRINTER" width="245" height="300" decoding="async"></li>
+<li data-mod="flip" data-halo="assets/img/2bd0736b42.webp"><img src="assets/img/94b93295db.webp" alt="翻转屏 · FLIP" width="185" height="300" decoding="async"></li>
+<li data-mod="battery" data-halo="assets/img/28c50f1cb3.webp"><img src="assets/img/a917f74b34.webp" alt="外挂电池 · BATTERY" width="247" height="300" decoding="async"></li>
+</ul>
+<div class="orb-poster" data-orb-poster aria-hidden="true"><img alt="" width="1100" height="1400" decoding="async"></div>
+<div class="orb-mount" data-orb-mount aria-hidden="true"></div>
+</div>
+
+<div class="orb-haze" aria-hidden="true"></div>
+<div class="orb-beam" aria-hidden="true"></div>
+<div class="orb-beam-core" aria-hidden="true"></div>
+<div class="orb-vignette" aria-hidden="true"></div>
+<div class="orb-fade" aria-hidden="true"></div>
+</div>
+
+<div class="orb-copy wrap">
+<p class="orb-eyebrow" data-reveal data-reveal-delay="0.05">Modular System · 万象环</p>
+<h2 class="orb-title" id="orb-title" data-reveal data-reveal-delay="0.14">以一环，拓<em>万象</em>。</h2>
+</div>
+</section>
+
+<script src="assets/js/transition-3d.js"></script>
+
+<!-- ===== fragments/sec-flip.html ===== -->
+
+
+<section id="flip" class="sec fl2" aria-labelledby="fl2-title">
+<div class="fl2-scene">
+<div class="fl2-stage" data-fl2-stage></div>
+<div class="fl2-veil" aria-hidden="true"></div>
+<div class="fl2-fallback" aria-hidden="true"></div>
+</div>
+
+<div class="fl2-head">
+<p class="fl2-eyebrow" data-fl2-reveal>FLIP DISPLAY MODULE · 翻转屏模块</p>
+<h2 class="fl2-title" id="fl2-title" data-fl2-reveal>翻开一屏，<br>展开<em>无限可能</em>。</h2>
+<p class="fl2-lede" data-fl2-reveal>合上，用后摄自拍，随时看见自己的构图。<br>
+展开，一屏看视频，一屏看评论。<br>
+支起，画面工具各得其所，随身开启双屏工作站。</p>
+<div class="fl2-mode" data-fl2-reveal>
+<h3 class="fl2-mode-title" data-fl2-mode-title>换个角度，看见自己。</h3>
+<p class="fl2-mode-desc" data-fl2-mode-desc>后摄自拍也能实时预览，让构图与表情尽在眼前。还可展示内容、查看通知，或面对面显示翻译。</p>
+</div>
+</div>
+
+<div class="fl2-ui">
+<div class="fl2-tabs">
+<button class="fl2-tab is-on" type="button" data-fl2-pose="0"><b>0°</b><span>贴合 · 背屏</span></button>
+<button class="fl2-tab" type="button" data-fl2-pose="180"><b>180°</b><span>双屏模式</span></button>
+<button class="fl2-tab" type="button" data-fl2-pose="270"><b>270°</b><span>工作站模式</span></button>
+<div class="fl2-range">
+<input type="range" min="0" max="270" step="1" value="0" data-fl2-range aria-label="翻转角度 0 / 180 / 270 度">
+<div class="fl2-ticks"><span>0°</span><span>180°</span><span>270°</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<script defer src="assets/flip-parts.js"></script>
+<script defer src="assets/screens.js"></script>
+<script src="assets/js/flip-3d.js"></script>
+
+<!-- ===== fragments/sec-imaging.html ===== -->
+
+
+<section id="imaging" class="sec s5-imaging" aria-labelledby="imaging-title">
+<div class="wrap">
+<header class="s5-head">
+<div class="s5-head-main">
+<p class="eyebrow" data-reveal>OPTICAL MODULE SYSTEM · 模块光学系统</p>
+<h2 class="h2" id="imaging-title" data-reveal>让<span class="s5-h2-accent">光影</span>，<br>不止于机身。</h2>
+</div>
+<p class="lede s5-lede" data-reveal>
+磁吸接入M4/3大底，将影像的可能延伸至机身之外。
+一亿像素、等效 35mm 焦距与f/1.4大光圈，让光学采集与计算摄影协同完成每一次创作。
+</p>
+</header>
+
+<div class="s5-panels">
+<!-- 左：手机主摄（1/1.12" LOFIC 200MP） -->
+<div class="s5-panel s5-panel--phone">
+<div class="s5-panel-head">
+<span class="s5-panel-tag">旗舰主摄 · 随手记录</span>
+<span class="s5-panel-sub">1/1.12″ · 200MP</span>
+</div>
+<div class="s5-shot">
+<figure class="s5-photo">
+<img class="s5-photo-img" src="assets/img/fe7165d46f.webp" alt="手机主摄样张：外滩望向陆家嘴天际线"
+width="1600" height="1200" loading="lazy" decoding="async">
+</figure>
+</div>
+<dl class="s5-kvs">
+<div class="s5-kv"><dt>传感器</dt><dd>1/1.12″</dd></div>
+<div class="s5-kv"><dt>等效焦距</dt><dd>23mm</dd></div>
+<div class="s5-kv"><dt>光圈</dt><dd>f/1.4</dd></div>
+<div class="s5-kv"><dt>传感器面积</dt><dd>约 98mm²（4:3）</dd></div>
+<div class="s5-kv"><dt>动态范围</dt><dd><b>17 档</b> 单帧</dd></div>
+</dl>
+</div>
+
+<!-- 中缝：发光分割线 + VS -->
+<div class="s5-seam" aria-hidden="true">
+<span class="s5-seam-line"></span>
+<span class="s5-seam-vs">VS</span>
+</div>
+
+<!-- 右：光学模块（M4/3 100MP） -->
+<div class="s5-panel s5-panel--module">
+<div class="s5-panel-head">
+<span class="s5-panel-tag">光学模块 · 进阶创作</span>
+<span class="s5-panel-sub">M4/3 · 100MP</span>
+</div>
+<div class="s5-shot">
+<figure class="s5-photo">
+<img class="s5-photo-img" src="assets/img/fa7123109c.webp" alt="M4/3 光学模块样张：外滩望向陆家嘴天际线"
+width="1600" height="1200" loading="lazy" decoding="async">
+</figure>
+</div>
+<dl class="s5-kvs">
+<div class="s5-kv"><dt>传感器</dt><dd>M4/3″</b></dd></div>
+<div class="s5-kv"><dt>等效焦距</dt><dd>35mm</dd></div>
+<div class="s5-kv"><dt>光圈</dt><dd>f/1.4</dd></div>
+<div class="s5-kv is-hi"><dt>传感器面积</dt><dd>约 225mm² · <b>2.3×</b> 主摄</dd></div>
+<div class="s5-kv"><dt>出片规格</dt><dd>RAW 直出</dd></div>
+</dl>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<script src="assets/js/imaging.js"></script>
+
+
+<!-- ===== fragments/sec-terminal.html ===== -->
+
+
+<section id="terminal" class="sec s6-terminal" aria-labelledby="terminal-title">
+<div class="wrap">
+<header class="s6-head">
+<p class="eyebrow" data-reveal>SMART TERMINAL · 智能终端模块</p>
+<h2 class="h2" id="terminal-title" data-reveal>手机落座，<br>连接生活。</h2>
+<p class="lede" data-reveal>集充电底座、AI音箱与智能家庭屏于一体。连接Legend，让影音与日常操作延伸到桌面；取下手机，它仍是独立的小爱音箱与家庭控制入口。</p>
+</header>
+
+<!-- 滚动舞台：左侧 3D 场景随右侧文案推进"下落 — 吸附 — 旋转" -->
+<div class="s6-stage">
+<div class="s6-visual">
+<div class="s6-scene" data-state="1">
+<div class="s6-desk" aria-hidden="true">
+<span class="s6-desk-grain"></span>
+</div>
+<div class="s6-glow" aria-hidden="true"></div>
+
+<figure class="s6-shot--poster" aria-hidden="true">
+<img src="assets/img/f3bf9837dc.webp" alt="" width="760" height="760" decoding="async" draggable="false">
+</figure>
+<canvas class="s6-canvas" aria-hidden="true"></canvas>
+
+<span class="s6-flash" aria-hidden="true"></span>
+
+</div>
+</div>
+
+<div class="s6-acts">
+<article class="s6-act" data-act="1">
+<p class="s6-act-idx">01 / 落座</p>
+<h3 class="s6-act-title">轻轻一放，<br>充电有了着落。</h3>
+<p class="s6-act-text">磁吸对位，触点连接，为 Legend 提供最高50W磁吸充电。充电时间与目标电量由你设定，让补充电量自然融入桌面日常。</p>
+<ul class="s6-act-spec">
+<li><b>50W MAX</b><span>磁吸充电</span></li>
+<li><b>10,000mAh</b><span>模块内置电池</span></li>
+</ul>
+</article>
+
+<article class="s6-act" data-act="2">
+<p class="s6-act-idx">02 / 协同</p>
+<h3 class="s6-act-title">横竖随心，<br>声画相伴。</h3>
+<p class="s6-act-text">旋转90°，在竖屏浏览与横屏观影之间切换。通过光通信传输无损数字音频，模块与手机扬声器协同播放、自动分频，让桌面观影有声有色。</p>
+<ul class="s6-act-spec">
+<li><b>90°</b><span>横竖屏切换</span></li>
+<li><b>协同播放</b><span>手机与模块自动分频</span></li>
+</ul>
+</article>
+
+<article class="s6-act" data-act="3">
+<p class="s6-act-idx">03 / 独立</p>
+<h3 class="s6-act-title">拿起手机，<br>陪伴继续。</h3>
+<p class="s6-act-text">取下Legend，仍可呼唤小爱同学、播放音乐、控制智能家居。底座屏幕显示时间、天气与设备状态，也能换上喜欢的壁纸，让桌面有自己的模样。</p>
+<ul class="s6-act-spec">
+<li><b>40 W </b><span>三声学单元</span></li>
+<li><b>380ppi</b><span>智能家庭屏</span></li>
+</ul>
+
+</article>
+</div>
+</div>
+
+<!-- 子模块的未来 -->
+<div class="s6-future">
+<div class="s6-future-head">
+<p class="eyebrow" data-reveal>WHAT&rsquo;S NEXT · 子模块</p>
+<h3 class="s6-future-title" data-reveal>为今天所用，<br><span></span>为明天留位。</span></h3>
+<p class="body s6-future-sub" data-reveal>顶部预留子模块接口，让功能继续生长。从摄像头子模块开始，为同一台智能终端增添新的用途。</p>
+</div>
+
+<div class="s6-deck" data-reveal>
+<figure class="s6-card s6-card--main">
+<div class="s6-card-media">
+<canvas class="s6-card-canvas" aria-hidden="true"></canvas>
+<img class="s6-card-poster" src="assets/img/408cf4e7f1.webp" alt="摄像头子模块"
+width="700" height="660" decoding="async">
+</div>
+<figcaption>
+<b>摄像头子模块</b>
+<span>3200万像素，支持三轴角度调节。<br>Legend落座时，可作为外接前摄；<br>手机不在，它也能为智能终端提供手势操控与图像识别能力。</span>
+</figcaption>
+</figure>
+
+<figure class="s6-card s6-card--ph s6-card--g1" aria-hidden="true">
+<div class="s6-card-media"><svg class="s6-card-svg" viewBox="0 0 1000 760" xmlns="http://www.w3.org/2000/svg">
+<!-- 台灯子模块剪影 -->
+<rect x="450" y="138" width="100" height="50" rx="12" fill="#000"/>
+<rect x="42" y="170" width="916" height="100" rx="26" fill="#000"/>
+<rect x="452" y="200" width="96" height="190" fill="#000"/>
+<rect x="422" y="388" width="156" height="306" fill="#000"/>
+<rect x="288" y="692" width="424" height="58" rx="8" fill="#000"/>
+</svg></div>
+<figcaption><b>台灯子模块</b><span>规划中</span></figcaption>
+</figure>
+<figure class="s6-card s6-card--ph s6-card--g2" aria-hidden="true">
+<div class="s6-card-media"><svg class="s6-card-svg" viewBox="0 0 1000 760" xmlns="http://www.w3.org/2000/svg">
+<!-- 温湿度计子模块剪影：黑壳方机身 + 灰屏 -->
+<rect x="292" y="150" width="416" height="416" rx="62" fill="#000"/>
+<rect x="330" y="188" width="340" height="340" rx="46" fill="#3d3d40"/>
+<rect x="422" y="558" width="156" height="136" fill="#000"/>
+<rect x="288" y="692" width="424" height="58" rx="8" fill="#000"/>
+</svg></div>
+<figcaption><b>温湿度计子模块</b><span>规划中</span></figcaption>
+</figure>
+<figure class="s6-card s6-card--ph s6-card--g3" aria-hidden="true">
+<div class="s6-card-media"><svg class="s6-card-svg" viewBox="0 0 1000 760" xmlns="http://www.w3.org/2000/svg">
+<!-- CO₂ 监测子模块剪影：黑圆柱 + 灰传感面 -->
+<ellipse cx="500" cy="118" rx="102" ry="26" fill="#000"/>
+<ellipse cx="500" cy="118" rx="68" ry="17" fill="#3d3d40"/>
+<rect x="398" y="118" width="204" height="238" fill="#000"/>
+<ellipse cx="500" cy="356" rx="102" ry="26" fill="#000"/>
+<rect x="452" y="350" width="96" height="40" fill="#000"/>
+<rect x="422" y="388" width="156" height="306" fill="#000"/>
+<rect x="288" y="692" width="424" height="58" rx="8" fill="#000"/>
+</svg></div>
+<figcaption><b>CO₂监测子模块</b><span>规划中</span></figcaption>
+</figure>
+<figure class="s6-card s6-card--ph s6-card--g4" aria-hidden="true">
+<div class="s6-card-media"><svg class="s6-card-svg" viewBox="0 0 1000 760" xmlns="http://www.w3.org/2000/svg">
+<!-- 投影仪子模块剪影：竖机身 + 灰圈镜头 -->
+<rect x="326" y="110" width="348" height="448" rx="56" fill="#000"/>
+<circle cx="500" cy="244" r="92" fill="#3d3d40"/>
+<circle cx="500" cy="244" r="63" fill="#000"/>
+<rect x="422" y="550" width="156" height="144" fill="#000"/>
+<rect x="288" y="692" width="424" height="58" rx="8" fill="#000"/>
+</svg></div>
+<figcaption><b>投影仪子模块</b><span>规划中</span></figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<script src="assets/js/terminal-wallpaper.js"></script>
+
+<!-- ===== fragments/sec-print.html ===== -->
+
+
+<section id="print" class="sec is-light s7-print" aria-labelledby="print-title">
+<div class="wrap">
+<header class="s7-head">
+<p class="eyebrow" data-reveal>PRINT MODULE · 打印机模块</p>
+<h2 class="h2" id="print-title" data-reveal>刚刚拍下，<br>转眼握在手中。</h2>
+<p class="lede" data-reveal>拍下喜欢的瞬间，修成喜欢的样子。换上打印机模块，在相册中直接打印，无需额外下载 App。把照片留给自己，也把回忆递给身边的人。</p>
+</header>
+
+<!-- 模块合体：光学模块 / 摄影手柄 / 机身依次旋转进场，组装成一台完整的 Legend。
+     · 实时 three.js（GLB + Draco），file:// 直接双击打开也能跑
+     · 移动端 / 无 WebGL / 减弱动效 → 用同一姿态的静态海报兜底 -->
+<div class="s7-asm" data-reveal>
+<div class="s7-asm-stage">
+<canvas class="s7-asm-canvas" aria-hidden="true"></canvas>
+<img class="s7-asm-poster" alt="光学模块、摄影手柄与 Legend 机身组装成的一台相机" src="assets/img/b8bb51d8d7.webp" width="1600" height="810" decoding="async">
+</div>
+</div>
+
+<!-- 视觉锚点：打印机模块本体 + 出纸状态 -->
+<div class="s7-anchor">
+<div class="s7-anchor-copy">
+<p class="eyebrow" data-reveal>PRINT YOUR MOMENTS · 留住此刻</p>
+<h3 class="s7-anchor-title" data-reveal>让值得留住的，<br>有一张照片的分量。</h3>
+<p class="body" data-reveal>热升华打印，呈现细腻的色彩过渡。2 × 3 英寸照片，放进钱包、贴进手账，或送给一起入镜的人。表面保护覆膜，帮助抵御水渍、指纹与氧化，让收藏更安心。</p>
+<ul class="s7-specs" data-reveal>
+<li><b>300×512</b><span>打印分辨率</span></li>
+<li><b>2×3 英寸</b><span>50 × 76 mm 相纸</span></li>
+<li><b>约30~40s</b><span>单张打印时间</span></li>
+<li><b>1500mAh</b><span>模块内置电池</span></li>
+</ul>
+</div>
+
+<div class="s7-anchor-visual">
+<figure class="media s7-printer" data-reveal>
+<img src="assets/img/bb218741f8.webp"
+alt="小米 Legend 打印机模块"
+loading="lazy" decoding="async" width="1000" height="1000"
+onerror="this.remove()">
+</figure>
+<figure class="media s7-photo">
+<img src="assets/img/f3337e682a.webp"
+alt="打印出来的星空照片"
+loading="lazy" decoding="async" width="800" height="1200"
+onerror="this.remove()">
+<figcaption>出纸视角 · 50 × 76 mm</figcaption>
+</figure>
+</div>
+</div>
+
+<!-- 系统级功能点 -->
+<div class="s7-feats">
+<div class="s7-feat" data-reveal>
+<b>系统级打印</b>
+<span>吸附连接后，在相册中选图、编辑并发起打印，无需额外下载 App。</span>
+</div>
+<div class="s7-feat" data-reveal>
+<b>证件照模式</b>
+<span>自动裁切、替换底色、完成排版，从拍摄到打印，一部手机接续完成。</span>
+</div>
+<div class="s7-feat" data-reveal>
+<b>徕卡色彩</b>
+<span>打印前应用徕卡色彩预设，让喜欢的影调从屏幕延伸到相纸。</span>
+</div>
+<div class="s7-feat" data-reveal>
+<b>AR 照片</b>
+<span>为照片关联本机视频或音频，再次扫描，让静止的画面接着讲述那一刻。</span>
+</div>
+</div>
+</div>
+</section>
+
+<script src="assets/js/print.js"></script>
+
+
+<!-- ===== fragments/sec-more.html ===== -->
+
+
+<section id="more" class="sec s8-more" aria-labelledby="more-title">
+<div class="wrap">
+<header class="s8-head">
+<p class="eyebrow" data-reveal>MORE MODULES · 更多扩展</p>
+<h2 class="h2" id="more-title" data-reveal>多一份装备，<br>多一分从容。</h2>
+<p class="lede" data-reveal>持续游戏、长途出行，或认真完成一次拍摄。散热、电量、收音与操控，按你的需要添上，让 Legend 更适合此刻的任务。</p>
+</header>
+</div>
+
+<!-- 横向卡带：滚动时整条索引缓慢横移 -->
+<div class="s8-band" aria-hidden="true">
+<div class="s8-band-track">
+<span class="s8-band-item"><i>01</i>散热模块</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>02</i>外挂电池</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>03</i>磁吸麦克风</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>04</i>摄影手柄</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><em>一环 · 万象</em></span>
+</div>
+</div>
+
+<div class="wrap">
+<div class="s8-rows">
+<!-- 01 散热模块 -->
+<article class="s8-row s8-row--cooling">
+<div class="s8-media-wrap">
+<span class="s8-index" aria-hidden="true">01</span>
+<figure class="media s8-media">
+<img src="assets/img/2b1e9a2ae1.webp"
+alt="小米 Legend 散热模块"
+loading="lazy" decoding="async" width="1000" height="1000"
+onerror="this.remove()">
+</figure>
+</div>
+<div class="s8-copy">
+<p class="s8-kicker">Cooling · 散热模块</p>
+<h3 class="s8-title">冷静，<br>是性能的底气。</h3>
+<p class="s8-text">半导体制冷配合铜合金散热鳍片与离心风扇，为持续游戏和拍摄辅助散热。支持智能调速，也可手动选择运行模式；接入 Type-C 时优先使用外部电源。</p>
+<ul class="s8-stats">
+<li><b data-count="25" data-prefix="<" data-suffix="dB">&lt;25 dB</b><span>运行噪音</span></li>
+<li><b>6~10°C</b><span>背板降温</span></li>
+<li><b data-count="16" data-suffix="mm">φ66 mm</b><span>模块厚度</span></li>
+</ul>
+</div>
+</article>
+
+<!-- 02 外挂电池 -->
+<article class="s8-row s8-row--flip s8-row--battery">
+<div class="s8-media-wrap">
+<span class="s8-index" aria-hidden="true">02</span>
+<figure class="media s8-media">
+<img src="assets/img/fcc265051d.webp"
+alt="小米 Legend 外挂电池模块"
+loading="lazy" decoding="async" width="1000" height="1000"
+onerror="this.remove()">
+</figure>
+</div>
+<div class="s8-copy">
+<p class="s8-kicker">Battery · 外挂电池</p>
+<h3 class="s8-title">把续航焦虑，<br>留给昨天。</h3>
+<p class="s8-text">安装后启动旁路供电，也可切换为充电模式。取下后，通过 Type-C 为其他设备补充电量，从日常通勤到长途出行，随身多一份储备。</p>
+<ul class="s8-stats">
+<li><b data-count="9000" data-suffix="mAh">9,000 mAh</b><span>标称容量</span></li>
+<li><b data-count="45" data-suffix="W MAX">最高 45 W</b><span>有线输出</span></li>
+<li><b data-count="940" data-suffix="Wh/L">940 Wh/L</b><span>能量密度</span></li>
+</ul>
+</div>
+</article>
+
+<!-- 03 磁吸麦克风 -->
+<article class="s8-row s8-row--mic">
+<div class="s8-media-wrap">
+<span class="s8-index" aria-hidden="true">03</span>
+<figure class="media s8-media">
+<img src="assets/img/d52875da07.webp"
+alt="小米 Legend 磁吸麦克风模块"
+loading="lazy" decoding="async" width="1000" height="1000"
+onerror="this.remove()">
+</figure>
+</div>
+<div class="s8-copy">
+<p class="s8-kicker">Mic · 磁吸麦克风</p>
+<h3 class="s8-title">轻若无物，<br>声声清晰。</h3>
+<p class="s8-text">轻轻夹上领口，让收音更靠近人声。支持降噪与蓝牙 LE Audio 直连，无论出镜讲述还是随手记录，都能轻装开始。</p>
+<ul class="s8-stats">
+<li><b data-count="20" data-prefix="<" data-suffix="g">&lt;20 g</b><span>整机重量</span></li>
+<li><b data-count="6" data-prefix=">" data-suffix="h">&gt;6 h</b><span>单次续航</span></li>
+<li><b data-count="20" data-prefix="≤" data-suffix="ms">≤20 ms</b><span>传输延迟</span></li>
+</ul>
+</div>
+</article>
+
+<!-- 04 摄影手柄 -->
+<article class="s8-row s8-row--flip s8-row--grip">
+<div class="s8-media-wrap">
+<span class="s8-index" aria-hidden="true">04</span>
+<figure class="media s8-media s8-media--grip">
+<img src="assets/img/f0f0299437.webp"
+alt="小米 Legend 摄影手柄模块"
+loading="lazy" decoding="async" width="1000" height="1000"
+onerror="this.remove()">
+</figure>
+<div class="s8-grip3d" data-grip3d-stage aria-hidden="true"><div data-grip3d-mount></div></div>
+</div>
+<div class="s8-copy">
+<div class="s8-copy-pane s8-copy-a" data-copy-a>
+<p class="s8-kicker">Grip · 摄影手柄</p>
+<h3 class="s8-title">握住的，<br>是创作的形状。</h3>
+<p class="s8-text">半按对焦，全按拍摄，拨轮随手调节参数，独立录制键捕捉动态。还可搭配光学模块或散热模块，让拍摄装备按需组合。</p>
+<ul class="s8-stats">
+<li><b>两段式快门</b><span>半按对焦 · 全按拍摄</span></li>
+<li><b data-count="1500" data-suffix="mAh">1,500 mAh</b><span>手柄内置电池</span></li>
+<li><b data-count="4" data-suffix="类接口">四类接口</b><span>USB-A／Type-C／TF／HDMI</span></li>
+</ul>
+</div>
+<div class="s8-copy-pane s8-copy-b" data-copy-b aria-hidden="true">
+<p class="s8-kicker">GRIP EXPANSION · 手柄接口扩展</p>
+<h3 class="s8-title">握住相机，<br>接上更多创作工具。</h3>
+<p class="s8-text">读取 TF 卡素材，连接 USB 外设，通过 HDMI 将画面输出至外接显示器。四类接口集成于手柄，让存储、连接与监看随拍摄同行。</p>
+<ul class="s8-stats">
+<li><b>5 Gbps</b><span>USB 3.0 传输</span></li>
+<li><b>1080p 60Hz & 4K 30Hz</b><span>HDMI 输出</span></li>
+<li><b>TF 4.0</b><span>读卡器规格</span></li>
+</ul>
+</div>
+</div>
+</article>
+</div>
+
+<!-- 摄影手柄 · 开放音频生态：原生直连 DJI / Insta360 麦克风 -->
+<section class="s8-audio" aria-labelledby="s8-audio-title">
+<div class="s8-audio-copy">
+<p class="s8-kicker">Open Audio Ecosystem · 开放音频生态</p>
+<h3 class="s8-audio-title" id="s8-audio-title">熟悉的麦克风，<br>继续陪你创作。</h3>
+<p class="s8-audio-lede">摄影手柄计划适配 DJI、Insta360 无线麦克风，并支持符合 USB Audio Class 协议的音频设备。让已有的收音装备，成为 Legend 创作体验的一部分。</p>
+<ul class="s8-audio-list">
+<li class="s8-audio-item">
+<span class="s8-audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M12 3l5.4 4.6-10.8 8.6M12 21l5.4-4.6L6.6 7.8"/></svg></span>
+<div><b>品牌深度适配</b>
+<p>面向 DJI、Insta360 麦克风，规划原生连接与电量、信号状态显示。</p></div>
+</li>
+<li class="s8-audio-item">
+<span class="s8-audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="7.5" y="9" width="9" height="6" rx="3"/><path d="M3.5 12h4M16.5 12h4"/></svg></span>
+<div><b>USB 音频接入</b>
+<p>通过摄影手柄扩展接口，连接符合 USB Audio Class 协议的音频设备。</p></div>
+</li>
+<li class="s8-audio-item">
+<span class="s8-audio-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11.2v1.6M7.6 7.4v9.2M12 4v16M16.4 7.4v9.2M20.5 11.2v1.6"/></svg></span>
+<div><b>原生无线收音</b>
+<p>Legend 磁吸麦克风通过蓝牙 LE Audio 直连，轻装完成录音与拍摄。</p></div>
+</li>
+</ul>
+<p class="s8-audio-note">以上为产品设计目标；实际支持的品牌、型号与功能以最终验证结果为准。</p>
+</div>
+
+<div class="s8-audio-media" aria-hidden="true">
+<img class="s8-mic s8-mic--dji" src="assets/img/78c71dcca9.webp" alt="" width="560" height="551" decoding="async">
+<img class="s8-mic s8-mic--insta360" src="assets/img/8542056596.webp" alt="" width="560" height="557" decoding="async">
+</div>
+</section>
+</div>
+</section>
+
+<script defer src="assets/grip.glb.b64.js?v=20261030e"></script>
+<script defer src="assets/grip-view.js?v=20261101a"></script>
+<script src="assets/js/more.js"></script>
+
+
+<!-- ======================== 9：尾声 ======================== -->
+<section id="ending" class="ending" aria-labelledby="ending-title">
+<canvas class="ending-stars" aria-hidden="true"></canvas>
+<div class="ending-glow" aria-hidden="true"></div>
+<div class="ending-word" aria-hidden="true">Legend</div>
+<div class="ending-cinema" id="ending-cinema">
+<!-- 机身余像：Legend_v2.glb 背面直视、压暗到“隐约可见”，升到结束语背后被压住一角 -->
+<div class="ending-3d-layer" aria-hidden="true">
+<div class="ending-3d" data-ending3d>
+<div class="ending-3d-mount" data-ending3d-mount></div>
+</div>
+</div>
+
+<div class="ending-inner wrap">
+<p class="eyebrow" style="justify-content:center">Legend · 尾声</p>
+<h2 class="ending-title" id="ending-title" data-reveal>
+它叫 <em>Legend</em>，<br>我希望它机如其名。
+</h2>
+<div class="ending-meta" data-reveal>
+<span>一环，万象</span><i aria-hidden="true"></i><span>Xiaomi Legend · 概念产品</span><i aria-hidden="true"></i><span>2026</span>
+</div>
+<p class="ending-sign" data-reveal>概念设计与制作 · 微尘.Dustitute</p>
+</div>
+</div>
+
+<!-- 致谢 -->
+<div class="ending-thanks wrap">
+<p class="eyebrow" style="justify-content:center" data-reveal>致谢 · Acknowledgements</p>
+<ul class="thanks">
+<li data-reveal>
+<span class="t-name">Xiaomi MiMo</span>
+<span class="t-rule" aria-hidden="true"></span>
+<span class="t-role">技术指导</span>
+</li>
+<li data-reveal>
+<span class="t-name">DeepSeek Harness</span>
+<span class="t-rule" aria-hidden="true"></span>
+<span class="t-role">前端程序</span>
+</li>
+<li data-reveal>
+<span class="t-name">GPT-6 Astra</span>
+<span class="t-rule" aria-hidden="true"></span>
+<span class="t-role">美术指导</span>
+</li>
+</ul>
+</div>
+
+<!-- 最后留白 -->
+<div class="ending-blank" aria-hidden="true"></div>
+</section>
+</main>
+
+<!-- ======================== 页脚（小米官网结构 + 概念声明） ======================== -->
+<footer id="site-footer" class="site-footer" aria-label="页脚">
+<div class="wrap">
+<div class="footer-service">
+<span>预约维修服务</span>
+<span>7天无理由退货</span>
+<span>15天免费换货</span>
+<span>满69包邮</span>
+<span>1100余家售后网点</span>
+</div>
+
+<div class="footer-main">
+<div class="f-col">
+<h4>帮助中心</h4>
+<ul>
+<li><span class="f-link">账户管理</span></li>
+<li><span class="f-link">购物指南</span></li>
+<li><span class="f-link">订单操作</span></li>
+</ul>
+</div>
+<div class="f-col">
+<h4>服务支持</h4>
+<ul>
+<li><span class="f-link">申请售后</span></li>
+<li><span class="f-link">服务政策</span></li>
+<li><span class="f-link">服务价格</span></li>
+<li><span class="f-link">订单查询</span></li>
+<li><span class="f-link">以旧换新</span></li>
+<li><span class="f-link">保障服务</span></li>
+<li><span class="f-link">防伪查询</span></li>
+<li><span class="f-link">F码通道</span></li>
+</ul>
+</div>
+<div class="f-col">
+<h4>线下门店</h4>
+<ul>
+<li><span class="f-link">小米之家</span></li>
+<li><span class="f-link">服务网点</span></li>
+<li><span class="f-link">授权体验店/专区</span></li>
+</ul>
+</div>
+<div class="f-col">
+<h4>关于小米</h4>
+<ul>
+<li><span class="f-link">了解小米</span></li>
+<li><span class="f-link">加入小米</span></li>
+<li><span class="f-link">小米技术</span></li>
+<li><span class="f-link">投资者关系</span></li>
+<li><span class="f-link">ESG与可持续发展</span></li>
+<li><span class="f-link">廉洁举报</span></li>
+</ul>
+</div>
+<div class="f-col">
+<h4>关注我们</h4>
+<ul>
+<li><span class="f-link">新浪微博</span></li>
+<li><span class="f-link">官方微信</span></li>
+<li><span class="f-link">联系我们</span></li>
+<li><span class="f-link">公益基金会</span></li>
+<li><span class="f-link">小米高校合作</span></li>
+</ul>
+</div>
+<div class="f-col f-contact">
+<h4>联系客服</h4>
+<b>950816</b>
+<p>8:00-18:00（仅收市话费）<br>人工客服 · 950818</p>
+</div>
+</div>
+
+<div class="footer-links">
+<span class="f-link">小米官网</span><span class="sep">|</span>
+<span class="f-link">小米商城</span><span class="sep">|</span>
+<span class="f-link">小米澎湃OS</span><span class="sep">|</span>
+<span class="f-link">米家</span><span class="sep">|</span>
+<span class="f-link">多看</span><span class="sep">|</span>
+<span class="f-link">游戏</span><span class="sep">|</span>
+<span class="f-link">音乐</span><span class="sep">|</span>
+<span class="f-link">小米智能存储</span><span class="sep">|</span>
+<span class="f-link">政企服务</span><span class="sep">|</span>
+<span class="f-link">小米天猫店</span><span class="sep">|</span>
+<span class="f-link">小米集团隐私政策</span><span class="sep">|</span>
+<span class="f-link">小米商城隐私政策</span><span class="sep">|</span>
+<span class="f-link">小米商城用户协议</span><span class="sep"> </span>
+</div>
+
+<div class="footer-note">
+<span><b>本页面为产品概念展示，非商业发布。</b> 所有产品形态、参数与功能均为概念设想，不代表小米公司已发布产品，亦不构成任何购买邀约。</span>
+</div>
+
+<div class="footer-legal">
+<span>© mi.com</span>
+<span class="f-link">京ICP证110507号</span>
+<span class="f-link">京ICP备10046444号</span>
+<span class="f-link">京公网安备11010802020134号</span>
+<span class="f-link">京网文[2026]0015-006号</span>
+<span class="f-link">（京）网械平台备字（2018）第00005号</span>
+<span class="f-link">药品医疗器械网络信息服务备案 (京)网药械信息备字（2024）第00478号</span>
+<span class="f-link">营业执照</span>
+<span class="f-link">医疗器械质量公告</span>
+<span class="f-link">增值电信业务经营许可证编号：京B2-20180851</span>
+<span class="f-link">网络食品经营备案 京食药网食备202010048</span>
+<span class="f-link">食品经营许可证</span>
+<span class="f-link">新出发京批字第直220280号</span>
+<span class="f-link">违法和不良信息举报电话：171-5104-4404</span>
+<span class="f-link">知识产权侵权投诉</span>
+</div>
+
+<div class="footer-bottom">
+<span class="footer-slogan">探索黑科技，小米为发烧而生</span>
+<span style="margin-left:auto">Made for concept · Xiaomi Legend 2026</span>
+</div>
+</div>
+</footer>
+
+
+
+<!-- ======================== 尾声 3D：Legend_v2 机身余像 ======================== -->
+<script src="assets/js/ending-3d.js"></script>
+
+<!-- ======================== 尾声星空：Canvas 2D 粒子 ======================== -->
+<script src="assets/js/ending-stars.js"></script>
+
+<!-- ======================== 页面级脚本：页眉 / 首屏滚动叙事 / 尾声 ======================== -->
+<script src="assets/js/header.js"></script>
+<!-- ===== LEGEND BUY FLOW START (auto-injected) ===== -->
+<!-- 购买流程样式 -->
+
+
+<!-- 产品图（webp data URI） -->
+<script id="legend-buy-images" src="assets/js/buy-images.js"></script>
+
+<!-- 支付方式图标 -->
+<script id="legend-buy-pay-icons" src="assets/js/buy-pay-icons.js"></script>
+
+<!-- 省市区数据（小米商城地址库） -->
+<script id="legend-buy-address" src="assets/js/buy-address.js"></script>
+
+<!-- 购买流程结构 -->
+<!-- ==========================================================================
+     Xiaomi Legend · 立即购买流程
+     页面：select 选择配置 / confirm 确认订单 / pay 收银台 / success 完成
+     直达：#buy、#buy/confirm、#buy/pay、#buy/success
+     定价与权益：PRD 第五部分（5.1 手机本体 / 5.2 模块售价 / 5.3 套装 / 5.4 权益）
+     改文案改这里；改价格/配置/模块改 buy.js 顶部 CONFIG
+     ========================================================================== -->
+<div class="lg-buy" id="lgBuy" role="dialog" aria-modal="true" aria-label="Xiaomi Legend 立即购买" aria-hidden="true">
+
+  <div class="lg-buy__scrim" data-buy-close></div>
+
+  <div class="lg-buy__sheet">
+
+    <!-- ============================== 顶栏（与原网页一致：品牌在左，导航在右） ============================== -->
+    <header class="buy-bar">
+      <div class="buy-bar__inner">
+        <span class="buy-bar__name">Xiaomi Legend</span>
+        <nav class="buy-bar__links" aria-label="产品导航">
+          <span>概述页</span>
+          <span>参数页</span>
+          <span>F码通道</span>
+          <span>咨询客服</span>
+          <span>用户评价</span>
+        </nav>
+        <span class="buy-bar__now" data-buy-stepnow>选择配置 · 1/4</span>
+      </div>
+    </header>
+
+    <!-- ============================== 滚动区 ============================== -->
+    <div class="buy-scroll" data-buy-scroll>
+
+      <!-- ---------------------- 1. 选择配置 ---------------------- -->
+      <section class="buy-screen is-active" data-buy-screen="select" aria-labelledby="buySelTitle">
+        <div class="buy-product">
+
+          <!-- 左：产品舞台 -->
+          <div class="buy-stage">
+            <div class="buy-stage__frame">
+              <div class="buy-stage__halo" aria-hidden="true"></div>
+              <div class="buy-stage__ring" aria-hidden="true"></div>
+              <img class="buy-stage__img" data-buy-img alt="Xiaomi Legend 龙鳞纤维版" hidden>
+              <div class="buy-stage__fallback" data-buy-fallback aria-hidden="true"></div>
+            </div>
+            <div class="buy-thumbs" data-buy-thumbs role="group" aria-label="产品与模块预览"></div>
+          </div>
+
+          <!-- 右：购买面板 -->
+          <div class="buy-panel">
+            <p class="buy-kicker">MODULAR FLAGSHIP</p>
+            <h2 class="buy-title" id="buySelTitle">Xiaomi Legend</h2>
+            <p class="buy-sub">
+              模块化万物互联平台 | 玄戒O5自研旗舰处理器 | 185Hz 2K LTPO屏 | 9000mAh大电池+100W快充 | 徕卡调校LOFIC三摄
+            </p>
+
+            <div class="buy-price">
+              <span class="buy-price__now"><i>¥</i><b data-buy-price>9,999</b></span>
+              <span class="buy-price__meta" data-buy-price-meta>16GB+512GB 手机 · 赠散热模块</span>
+            </div>
+
+            <div class="buy-notice">
+              <div class="buy-notice__row">
+                <span class="buy-notice__tag">赠品</span>
+                <span data-buy-gift>首销三个月内，赠散热模块 ×1</span>
+              </div>
+              <div class="buy-notice__row">
+                <span class="buy-notice__tag buy-notice__tag--gray">权益</span>
+                <span data-buy-right>16GB+1TB 版本购机赠送模块盲盒，限量 20,000 份</span>
+              </div>
+            </div>
+
+            <div class="buy-addr">
+              <span class="buy-addr__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.5"/></svg>
+              </span>
+              <div class="buy-addr__txt">
+                <b data-buy-addr-who>请选择收货地址</b>
+                <span data-buy-addr-where>填写收货人、手机号与详细地址</span>
+              </div>
+              <button type="button" class="buy-addr__edit" data-buy-edit-address>修改</button>
+            </div>
+
+            <!-- 配置 -->
+            <div class="buy-sec">
+              <div class="buy-sec__head">
+                <h2 class="buy-sec__title"><i>01</i>选择配置</h2>
+              </div>
+              <div class="buy-configs" data-buy-configs role="radiogroup" aria-label="选择配置"></div>
+            </div>
+
+            <!-- 颜色 -->
+            <div class="buy-sec">
+              <div class="buy-sec__head">
+                <h2 class="buy-sec__title"><i>02</i>选择颜色</h2>
+              </div>
+              <div class="buy-opts" data-buy-colors role="radiogroup" aria-label="选择颜色"></div>
+            </div>
+
+            <!-- 模块 -->
+            <div class="buy-sec">
+              <div class="buy-sec__head">
+                <h2 class="buy-sec__title"><i>03</i>加购模块</h2>
+              </div>
+              <div class="buy-mods" data-buy-mods></div>
+            </div>
+
+            <div class="buy-total">
+              <span class="buy-total__label">合计（含加购模块）<span data-buy-total-note>未加购模块 · 免运费</span></span>
+              <span class="buy-total__amount"><i>¥</i><span data-buy-total>9,999</span></span>
+            </div>
+
+            <div class="buy-actions">
+              <button type="button" class="buy-btn buy-btn--ghost" data-buy-action="cart">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2.2l2.1 11.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 2-1.6L20.5 8H6.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20" r="1.3" fill="currentColor"/><circle cx="17.5" cy="20" r="1.3" fill="currentColor"/></svg>
+                加入购物车
+              </button>
+              <button type="button" class="buy-btn buy-btn--primary" data-buy-action="next">立即购买</button>
+            </div>
+
+            <div class="buy-assure">
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>7 天无理由退货</span>
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>15 天免费换货</span>
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>满 69 包邮</span>
+              <span><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>1100 余家售后网点</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 移动端底部操作条 -->
+        <div class="buy-dock">
+          <div class="buy-dock__price">
+            <small>合计（含加购模块）</small>
+            <b><i>¥</i><span data-buy-total>9,999</span></b>
+          </div>
+          <button type="button" class="buy-btn buy-btn--primary" data-buy-action="next">立即购买</button>
+        </div>
+      </section>
+
+      <!-- ---------------------- 2. 确认订单 ---------------------- -->
+      <section class="buy-screen" data-buy-screen="confirm" aria-labelledby="buyConfirmTitle">
+        <div class="buy-order">
+          <div class="buy-head">
+            <p class="buy-kicker">ORDER REVIEW</p>
+            <h2 id="buyConfirmTitle">确认订单</h2>
+            <p>请确认收货信息、商品配置与配送方式，提交后可在订单详情中查看物流。</p>
+          </div>
+
+          <div class="buy-order__grid">
+            <div class="buy-col">
+
+              <div class="b-card">
+                <div class="b-card__head">
+                  <h3 class="b-card__title">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.6" stroke="currentColor" stroke-width="1.5"/></svg>
+                    收货信息
+                  </h3>
+                  <button type="button" class="b-card__act" data-buy-edit-address>修改</button>
+                </div>
+                <div class="b-address">
+                  <div class="b-address__main">
+                    <b data-buy-addr-name>未填写收货人</b><span data-buy-addr-phone></span>
+                    <p data-buy-addr-full>尚未填写详细收货地址</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="b-card">
+                <div class="b-card__head">
+                  <h3 class="b-card__title">商品清单 <em>ITEMS</em></h3>
+                  <span class="b-card__act" data-buy-item-count>共 1 件</span>
+                </div>
+                <div class="b-item">
+                  <div class="b-item__thumb"><img data-buy-item-img alt="" hidden></div>
+                  <div class="b-item__main">
+                    <div class="b-item__name">Xiaomi Legend</div>
+                    <div class="b-item__spec" data-buy-item-spec>龙鳞纤维版 · 16GB+512GB</div>
+                    <div class="b-item__spec" data-buy-item-config>16GB+512GB 手机</div>
+                    <div class="b-item__spec" data-buy-item-modules>未加购模块</div>
+                  </div>
+                  <div class="b-item__price"><span data-buy-item-price>¥9,999</span><small data-buy-item-qty>× 1</small></div>
+                </div>
+                <div class="b-gift" data-buy-item-gift></div>
+              </div>
+
+              <div class="b-card b-card--plain">
+                <div class="b-card__head">
+                  <h3 class="b-card__title">配送与发票</h3>
+                </div>
+                <div class="b-lines">
+                  <div class="b-line">
+                    <span class="b-line__label">配送</span>
+                    <span class="b-line__value"><b>顺丰速运</b> 包邮</span>
+                  </div>
+                  <div class="b-line">
+                    <span class="b-line__label">发票</span>
+                    <span class="b-line__value"><b>电子普通发票</b> 个人<i>下单后可修改</i></span>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+            <aside class="b-card b-summary">
+              <h3 class="b-card__title" style="margin-bottom:16px">金额明细 <em>TOTAL</em></h3>
+              <div class="b-summary__rows">
+                <div class="b-summary__row"><span data-buy-sum-goods-label>商品金额</span><b data-buy-sum-goods>¥9,999</b></div>
+                <div class="b-summary__row"><span>模块加购</span><b data-buy-sum-modules>¥0</b></div>
+                <div class="b-summary__row"><span>运费</span><b>¥0</b></div>
+              </div>
+              <div class="b-summary__total">
+                <span>应付总额</span>
+                <b><i>¥</i><span data-buy-sum-total>9,999</span></b>
+              </div>
+              <button type="button" class="buy-btn buy-btn--primary buy-btn--wide" data-buy-action="submit">提交订单</button>
+              <p class="b-summary__tip">提交订单即表示同意《小米商城用户协议》与《隐私政策》</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------- 3. 收银台 ---------------------- -->
+      <section class="buy-screen" data-buy-screen="pay" aria-labelledby="buyPayTitle">
+        <div class="buy-pay">
+          <div class="buy-head">
+            <p class="buy-kicker">CHECKOUT</p>
+            <h2 id="buyPayTitle">收银台</h2>
+            <p>请确认支付方式，完成支付后我们会立即安排发货。</p>
+          </div>
+
+          <div class="buy-checkout">
+            <div class="buy-submit__meta">
+              <span>订单号 <b data-buy-order-no>LG20261101000123</b></span>
+              <span class="buy-submit__amount">应付金额 <b><i>¥</i><span data-buy-pay-amount>9,999</span></b></span>
+            </div>
+
+            <div class="b-card">
+              <div class="b-card__head">
+                <h3 class="b-card__title">选择支付方式</h3>
+                <span class="b-card__act">安全支付</span>
+              </div>
+              <div class="b-pay-methods" data-buy-methods role="radiogroup" aria-label="支付方式"></div>
+            </div>
+
+            <button type="button" class="buy-btn buy-btn--primary buy-btn--wide" data-buy-action="pay">
+              确认支付 <span data-buy-pay-amount-inline>¥9,999</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------- 4. 完成（视频页） ---------------------- -->
+      <section class="buy-screen buy-screen--final" data-buy-screen="success" aria-labelledby="buyDoneTitle">
+        <div class="buy-final" data-buy-final>
+          <h2 class="buy-sr" id="buyDoneTitle">订单完成</h2>
+
+          <div class="buy-final__stage">
+            <div class="buy-video">
+              <!-- 本地影片（前 30 秒，外链 assets/media/legend-30s.mp4）：不再依赖 B 站外链播放器；
+                   每次进入固定等 3 秒后文案向上渐显；播完自动返回主页。 -->
+              <video
+                data-buy-video
+                src="assets/media/legend-30s.mp4"
+                poster="assets/media/legend-30s-poster.jpg"
+                preload="auto" playsinline webkit-playsinline
+                controls controlslist="nodownload noplaybackrate"
+                aria-label="Xiaomi Legend 产品影片 · 30 秒"
+                title="Xiaomi Legend 产品影片">你的浏览器不支持 HTML5 视频播放。</video>
+            </div>
+          </div>
+
+          <div class="buy-final__copy">
+            <p class="buy-final__line">Legend 永远不会让你失望，<br>也永远不会让你为未准备好的产品买单。</p>
+            <button type="button" class="buy-btn buy-btn--ghost buy-final__back" data-buy-close>返回主页</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============================== 弹层：地址 / 说明 ============================== -->
+    <div class="buy-modal" data-buy-modal hidden>
+      <div class="buy-modal__scrim" data-buy-modal-close></div>
+      <div class="buy-modal__panel" role="dialog" aria-modal="true" aria-labelledby="buyModalTitle">
+        <header class="buy-modal__head">
+          <h3 id="buyModalTitle" data-buy-modal-title>说明</h3>
+          <button type="button" class="buy-modal__close" data-buy-modal-close aria-label="关闭">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </button>
+        </header>
+        <div class="buy-modal__body" data-buy-modal-body></div>
+      </div>
+    </div>
+
+    <!-- 支付加载（半秒转圈） -->
+    <div class="buy-loading" data-buy-loading hidden>
+      <div class="buy-loading__spin" aria-hidden="true"></div>
+      <p class="buy-loading__title">支付处理中</p>
+    </div>
+
+    <!-- Toast -->
+    <div class="buy-toast" data-buy-toastbox role="status" aria-live="polite">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-buy-toasttext>已加入购物车</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- 购买流程逻辑 -->
+<script id="legend-buy-js" src="assets/js/buy-flow.js"></script>
+<!-- ===== LEGEND BUY FLOW END ===== -->
+</body>
+</html>
