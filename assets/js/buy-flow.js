@@ -699,13 +699,28 @@
   }
 
   /* ============================== 视频 ==============================
-     本地 30 秒影片：进入视频页从 0 开始自动播放，播完自动返回主页；
-     文案在每次进入时固定等待 3 秒后向上渐显。 */
+     本地影片：进入视频页从 0 开始自动播放，播完自动返回主页；
+     文案在每次进入时固定等待 3 秒后向上渐显。
+
+     语速还原：assets/media/legend-30s.mp4 是 30.000s / 750 帧 / 25fps 的 CFR 文件，
+     视频流 mdhd 30000/1000、音频 30.021s、编码器 Lavf61.1.100 + h264_qsv。
+     页面本身从不改播放速度（实测 playbackRate=1、媒体时间与墙钟 1:1），
+     所以「约 1.7 倍速」是压制阶段写进画面的：750 帧按 25fps 记时只有 30 秒，
+     但原片内容约 51 秒，相当于把 ~14.7fps 的素材强行按 25fps 重新记时。
+     在不重压原素材的前提下，只能在播放端按「素材时长 / 原片时长」还原；
+     浏览器默认 preservesPitch=true，播放端降速不会变调。
+     原片时长有准确值时，只改 SOURCE_SECONDS 这一个数即可。 */
+  var SOURCE_SECONDS = 51;
   var finalTimer = 0;
   var videoActive = false;
   var videoBound = false;
 
   function videoEl() { return $('[data-buy-video]'); }
+
+  function rateFor(v) {
+    var media = v && isFinite(v.duration) && v.duration > 0 ? v.duration : 30;
+    return Math.min(1, media / SOURCE_SECONDS);
+  }
 
   function bindVideo() {
     var v = videoEl();
@@ -724,9 +739,8 @@
   function playVideo() {
     var v = videoEl();
     if (!v) return;
-    /* 素材在压制时被加速到约 1.7 倍（30 秒里塞进了 51 秒的内容），这里还原正常语速；
-       playbackRate < 1 时浏览器默认保持音高，不会变调 */
-    try { v.playbackRate = 1 / 1.7; } catch (e) {}
+    /* 播放端还原正常语速（不改 mp4 本身）：见上方 SOURCE_SECONDS 说明 */
+    try { v.playbackRate = rateFor(v); } catch (e) {}
     try { v.currentTime = 0; } catch (e) {}
     v.muted = false;
     var p = v.play();
