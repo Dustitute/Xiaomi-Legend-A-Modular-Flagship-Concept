@@ -191,8 +191,8 @@ onUpdate: function (self) { render(self.progress); }
 render(0);
 return function () { pinned = false; clearCopy(); };
 });
-mm.add('(max-width: 1024px)', function () {
-/* 窄屏不钉屏：模型跟着本行滚过时转一下，文案两套都读得到 */
+mm.add('(min-width: 769px) and (max-width: 1024px)', function () {
+/* 平板不钉屏：模型跟着本行滚过时转一下，文案两套都读得到 */
 pinned = false;
 clearCopy();
 ST.create({
@@ -205,6 +205,30 @@ view.setProgress(clamp01(self.progress / 0.75));
 row.classList.toggle('is-flipped', self.progress > 0.75);
 }
 });
+});
+mm.add('(max-width: 768px)', function () {
+/* 手机：不钉屏，但两套文案按滚动进度叠放交叉淡入——
+   先看到背面 + 手柄介绍，滚到这一行中段再翻面、换接口介绍，
+   不再一进屏两段同时出现、模型提前转完 */
+pinned = true;
+row.classList.add('is-seq');
+clearCopy();
+render(0);
+ST.create({
+trigger: row,
+start: 'top 78%',
+end: 'bottom 42%',
+scrub: 0.6,
+onUpdate: function (self) {
+/* 0.22 之前保持背面与第一段；之后 62% 的行程里完成翻面与换文案 */
+render(clamp01((self.progress - 0.22) / 0.62));
+}
+});
+return function () {
+pinned = false;
+row.classList.remove('is-seq');
+clearCopy();
+};
 });
 } else {
 pinned = true;

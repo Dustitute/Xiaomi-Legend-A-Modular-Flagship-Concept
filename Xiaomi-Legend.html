@@ -49,7 +49,7 @@ Xiaomi Legend · 单页概念站
 
 <script src="assets/js/js-flag.js"></script>
 
-<link rel="stylesheet" href="assets/css/legend.css?v=20261104c">
+<link rel="stylesheet" href="assets/css/legend.css?v=20261104d">
 
 </head>
 <body>
@@ -1096,9 +1096,10 @@ onerror="this.remove()">
 </header>
 </div>
 
-<!-- 横向卡带：滚动时整条索引缓慢横移 -->
+<!-- 横向卡带：桌面随滚动缓慢横移；手机单方向循环播放（1→2→3→4→1…） -->
 <div class="s8-band" aria-hidden="true">
 <div class="s8-band-track">
+<div class="s8-band-set">
 <span class="s8-band-item"><i>01</i>散热模块</span>
 <span class="s8-band-sep">/</span>
 <span class="s8-band-item"><i>02</i>外挂电池</span>
@@ -1107,7 +1108,19 @@ onerror="this.remove()">
 <span class="s8-band-sep">/</span>
 <span class="s8-band-item"><i>04</i>摄影手柄</span>
 <span class="s8-band-sep">/</span>
-<span class="s8-band-item"><em>一环 · 万象</em></span>
+<span class="s8-band-item s8-band-end"><em>一环 · 万象</em></span>
+</div>
+<div class="s8-band-set s8-band-set--clone">
+<span class="s8-band-item"><i>01</i>散热模块</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>02</i>外挂电池</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>03</i>磁吸麦克风</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item"><i>04</i>摄影手柄</span>
+<span class="s8-band-sep">/</span>
+<span class="s8-band-item s8-band-end"><em>一环 · 万象</em></span>
+</div>
 </div>
 </div>
 
@@ -1274,7 +1287,7 @@ onerror="this.remove()">
 <div class="ending-inner wrap">
 <p class="eyebrow" style="justify-content:center">Legend · 尾声</p>
 <h2 class="ending-title" id="ending-title" data-reveal>
-它叫 <em>Legend</em>，<br>我希望它机如其名。
+<span class="e-seg">它叫<br class="e-br"> <em>Legend</em><span class="h-punct">，</span></span><br class="e-br-outer"><span class="e-seg">我希望它<br class="e-br">机如其名<span class="h-punct">。</span></span>
 </h2>
 <div class="ending-meta" data-reveal>
 <span>一环，万象</span><i aria-hidden="true"></i><span>Xiaomi Legend · 概念产品</span><i aria-hidden="true"></i><span>2026</span>
