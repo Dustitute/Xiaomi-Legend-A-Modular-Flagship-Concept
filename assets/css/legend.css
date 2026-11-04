@@ -5254,18 +5254,18 @@ to{transform:translateX(-50%)}
 }
 
 /* ==========================================================================
-13.11 √2:1 设备专属：翻转屏底部控件缩小下移，3D 模型右移
+13.11 √2:1 设备专属：翻转屏底部控件下移、放大，进度条拉满，3D 模型右移
      仅 (1.36~1.47):1 生效；3:2、16:10、19.5:9 等比例保持原样。
    ========================================================================== */
 @media (min-width:769px) and (min-aspect-ratio:1.36) and (max-aspect-ratio:1.47){
-.fl2-tabs{bottom:clamp(14px, 2.4vh, 24px);gap:10px}
-.fl2-tab{padding:10px 16px 11px;border-radius:14px;gap:2px}
-.fl2-tab b{font-size:18px}
-.fl2-tab span{font-size:11px}
-.fl2-range{max-width:420px;min-width:150px;gap:4px}
-.fl2-range input[type=range]{height:16px}
-.fl2-range input[type=range]::-webkit-slider-thumb{width:12px;height:12px;margin-top:-4px}
-.fl2-ticks{font-size:8px;height:11px}
+.fl2-tabs{bottom:clamp(12px, 2.2vh, 22px);gap:12px}
+.fl2-tab{padding:14px 24px 15px;border-radius:16px;gap:3px}
+.fl2-tab b{font-size:21px}
+.fl2-tab span{font-size:12.5px}
+.fl2-range{flex:1 1 100%;max-width:none;min-width:0;gap:6px;margin-left:0}
+.fl2-range input[type=range]{height:18px}
+.fl2-range input[type=range]::-webkit-slider-thumb{width:14px;height:14px;margin-top:-5px}
+.fl2-ticks{font-size:9px;height:12px}
 .fl2-ui{padding-bottom:clamp(6px, 1vh, 12px)}
 .fl2-stage{transform:translateX(2.5%)}
 }
