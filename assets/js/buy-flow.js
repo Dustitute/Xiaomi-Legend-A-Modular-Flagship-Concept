@@ -724,6 +724,9 @@
   function playVideo() {
     var v = videoEl();
     if (!v) return;
+    /* 素材在压制时被加速到约 1.7 倍（30 秒里塞进了 51 秒的内容），这里还原正常语速；
+       playbackRate < 1 时浏览器默认保持音高，不会变调 */
+    try { v.playbackRate = 1 / 1.7; } catch (e) {}
     try { v.currentTime = 0; } catch (e) {}
     v.muted = false;
     var p = v.play();
