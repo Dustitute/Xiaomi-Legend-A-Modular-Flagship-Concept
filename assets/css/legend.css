@@ -288,7 +288,9 @@ background:#ff6900;color:#fff;font-size:12.5px;font-weight:600;cursor:default;wh
 ========================================================================== */
 .intro{position:relative;height:280vh;background:var(--bg)}
 .intro-stage{
-position:sticky;top:0;height:100vh;height:100svh;overflow:clip;
+/* 100dvh：安卓 Edge 横屏下滑时地址栏会自动收起，可视高度变大；只用 svh 会留下
+   一条空白，露出下面的段落。dvh 跟随可视高度，始终铺满；不支持的浏览器回落 svh */
+position:sticky;top:0;height:100vh;height:100svh;height:100dvh;overflow:clip;
 background:
 radial-gradient(1200px 700px at 50% -10%,rgba(111,140,255,.13),transparent 60%),
 radial-gradient(900px 700px at 82% 108%,rgba(155,108,255,.10),transparent 62%),
@@ -636,11 +638,11 @@ mask-image:linear-gradient(180deg,#000 6%,rgba(0,0,0,.45) 48%,transparent 84%);
 
 /* --- 机身余像：背面直视、窄长一条，从结束语下方升起并被文字压住一角 --- */
 /* 这一段只有一屏：结语与机身叠好后，再往下翻动就是致谢 */
-.ending-cinema{position:relative;min-height:100vh;min-height:100svh}
+.ending-cinema{position:relative;min-height:100vh;min-height:100svh;min-height:100dvh}
 /* 机身层：铺在结束语背后的一屏，随内容一起滚走（不再钉住） */
 .ending-3d-layer{
 position:absolute;left:0;right:0;top:0;
-height:100vh;height:100svh;
+height:100vh;height:100svh;height:100dvh;
 z-index:1;pointer-events:none;
 overflow:hidden;
 }
@@ -656,7 +658,7 @@ radial-gradient(ellipse 22% 26% at 50% 62%,rgba(126,96,205,.055),transparent 78%
 /* 窄长画框：紧贴结束语下沿，直落到底边，机身在其中被裁切 */
 .ending-3d{
 position:absolute;left:50%;top:29vh;
-width:min(28vw,440px);height:calc(100svh - 29vh);
+width:min(28vw,440px);height:calc(100svh - 29vh);height:calc(100dvh - 29vh);
 margin-left:calc(min(28vw,440px) / -2);
 opacity:0;transform:translateY(26px);
 transition:opacity 1.8s var(--ease-out),transform 2s var(--ease-out);
@@ -803,8 +805,8 @@ color:var(--ink-2);font-size:13.5px;letter-spacing:.02em;
 :root{--header-h:56px}
 .wrap{padding-inline:20px}
 .intro{height:auto;min-height:0}
-.intro-stage{position:relative;height:auto;min-height:100svh;padding-bottom:0;display:block;overflow:clip}
-.hero{position:relative;height:auto;min-height:100svh;padding-top:calc(var(--header-h) + 10px);padding-bottom:0;display:block}
+.intro-stage{position:relative;height:auto;min-height:100svh;min-height:100dvh;padding-bottom:0;display:block;overflow:clip}
+.hero{position:relative;height:auto;min-height:100svh;min-height:100dvh;padding-top:calc(var(--header-h) + 10px);padding-bottom:0;display:block}
 .hero-title{
 font-size:clamp(62px,23vw,150px);padding-inline:14px;margin-top:2vh;
 justify-content:center;gap:0;letter-spacing:-.04em;
@@ -2531,7 +2533,7 @@ S9b · 模块过渡页（orbit）—— 暗场产品光
 ========================================================================== */
 .orb{
 position:relative;isolation:isolate;overflow:clip;
-min-height:100svh;padding:0;
+min-height:100svh;min-height:100dvh;padding:0;
 display:flex;flex-direction:column;justify-content:flex-end;
 color:#f4f4f8;
 background:
@@ -2660,7 +2662,7 @@ S10 · 翻转屏模块（flip）
 ========================================================================== */
 .fl2{
 position:relative;isolation:isolate;overflow:clip;
-min-height:100svh;padding:0;
+min-height:100svh;min-height:100dvh;padding:0;
 color:#f2f2f6;
 background:
 radial-gradient(120% 90% at 78% -10%,#141821 0%,#0a0c12 42%,#05060a 76%),
@@ -3474,7 +3476,7 @@ min-height: 4.95em;
 
 /* ---------- 移动端：单列、关闭 sticky 与滚动接管 ---------- */
 @media (max-width: 768px){
-.s6-stage{ display:flex; flex-direction:column; align-items:stretch; gap:14px; height:100svh; padding-top:calc(var(--header-h, 56px) + 30px); margin-top:24px; }
+.s6-stage{ display:flex; flex-direction:column; align-items:stretch; gap:14px; height:100svh; height:100dvh; padding-top:calc(var(--header-h, 56px) + 30px); margin-top:24px; }
 .s6-stage.is-pinned{ touch-action:none; }
 .s6-visual{ position:relative; top:auto; transform:none; margin-top:0; flex:0 0 auto; }
 .s6-acts{ position:relative; flex:1 1 auto; min-height:0; padding-bottom:0; overflow:hidden; }
@@ -5027,9 +5029,9 @@ html.js .s6-act{opacity:1;visibility:visible;transform:none}
 .fl2-mode-desc{font-size:clamp(13px, 1.5vw, 16px)}
 
 /* ---- 尾声：余像窄条限高，别在 1900px 高屏上拉成一根竖线 ---- */
-.ending-cinema{min-height:min(100svh, 860px)}
-.ending-3d-layer{height:min(100svh, 860px)}
-.ending-3d{top:min(29vh, 300px);height:min(calc(100svh - min(29vh, 300px)), 820px)}
+.ending-cinema{min-height:min(100svh, 860px);min-height:min(100dvh, 860px)}
+.ending-3d-layer{height:min(100svh, 860px);height:min(100dvh, 860px)}
+.ending-3d{top:min(29vh, 300px);height:min(calc(100svh - min(29vh, 300px)), 820px);height:min(calc(100dvh - min(29vh, 300px)), 820px)}
 }
 
 /* ==========================================================================
@@ -5071,4 +5073,49 @@ padding-bottom:0;
 .orb-poster img{width:min(52vh, 34vw)}
 @media (max-width:768px){
 .orb-poster img{width:min(46vh, 62vw)}
+}
+
+/* ==========================================================================
+12.7 规格页（#specs）左栏：矮视口下按可用高度收敛
+     · 左栏（标题 + 导语 + 玄戒 O5 图）高约 660px，加上 154px 的吸顶偏移总共
+       需要约 815px 视口高；16:10 平板（扣掉系统栏与浏览器工具栏后 ≈720px）、
+       1024×724 的 √2 视口都放不下，图片底部会被切掉。
+     · 做法一：吸顶位置随视口高度从 154px 连续下压到 84px。滚到规格页时页眉
+       已收起，只剩 52px 的副导航，84 = 52 + 32 呼吸，不会压到文字。
+     · 做法二：还不够高时，图片按「章节刚露头」那一刻的可用高度等比收窄。
+       起点用 --s3-arrive-top（52px 页眉 + 段落上留白）而不是吸顶位置，
+       因为图片被切往往就发生在章节刚滚到页眉下方的那一屏。
+     · 3:2（1440×960 等）与 19.5:9（884 高及以上）上两个变量都取回原值，
+       吸顶位置仍是 154px、图片仍是 320px，画面与改动前逐像素一致。
+   ========================================================================== */
+@media (min-width:901px){
+.s3-specs{
+/* 100svh - 690：视口再矮就继续上移；下限 84px 是页眉收起后的安全位置 */
+--s3-side-top:clamp(84px, calc(100svh - 690px), calc(var(--utility-h, 34px) + var(--header-h, 64px) + 56px));
+--s3-side-top:clamp(84px, calc(100dvh - 690px), calc(var(--utility-h, 34px) + var(--header-h, 64px) + 56px));
+/* 章节刚露头时左栏的起点：页眉收起后 52px + 段落自身留白 */
+--s3-arrive-top:calc(52px + clamp(96px, 12vh, 150px));
+/* 图片可用宽度：视口高 - 起点 - 标题/导语占位(≈200) - 底部留白(≈12)，按 412/569 换算 */
+--s3-xring-w:max(140px, calc((100svh - var(--s3-arrive-top) - 212px) * 412 / 569));
+--s3-xring-w:max(140px, calc((100dvh - var(--s3-arrive-top) - 212px) * 412 / 569));
+}
+.s3-specs .s3-side{top:var(--s3-side-top)}
+.s3-specs .s3-xring img{width:min(100%, 320px, var(--s3-xring-w))}
+}
+
+/* ==========================================================================
+12.8 翻转屏（#flip）：短视口下给底部控件让出安全距离
+     · 标题块与 0°/180°/270° 三键都是绝对定位（一个贴顶、一个贴底），
+       平板横屏时高度只有 800~860px；安卓系统字号再放大 1.1~1.2 倍后，
+       标题块被撑高，介绍文案会压到三键上。
+     · 这里在高度不足 880px 时把标题块整体上移、字号与间距收紧，留出余量；
+       3:2（960 高）及更高的视口不触发，保持原设计。
+   ========================================================================== */
+@media (min-width:901px) and (max-height:880px) and (min-aspect-ratio:11/10) and (max-aspect-ratio:2/1){
+.fl2-head{top:calc(var(--header-h) + clamp(44px, 8.6vh, 120px))}
+.fl2-title{font-size:clamp(30px, min(3.5vw, 5.6vh), 52px)}
+.fl2-lede{margin-top:12px;font-size:clamp(14.5px, min(1.15vw, 1.95vh), 18px);line-height:1.7}
+.fl2-mode{margin-top:clamp(18px, 3.2vh, 40px)}
+.fl2-mode-title{margin-top:18px;font-size:clamp(17px, min(1.55vw, 2.4vh), 23px)}
+.fl2-mode-desc{font-size:clamp(13px, min(1vw, 1.7vh), 15.5px);line-height:1.7}
 }
