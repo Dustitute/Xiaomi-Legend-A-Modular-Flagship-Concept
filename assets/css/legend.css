@@ -5180,8 +5180,8 @@ border-bottom-color:var(--line);
 }
 /* 两组内容等宽：-50% 正好是一组的宽度，位移到头后与开头完全重合，不会有回弹 */
 @keyframes s8BandLoop{
-from{transform:translateX(-50%)}
-to{transform:translateX(0)}
+from{transform:translateX(0)}
+to{transform:translateX(-50%)}
 }
 @media (prefers-reduced-motion:reduce){
 .s8-band-track{animation:none}
@@ -5251,4 +5251,21 @@ to{transform:translateX(0)}
 .s8-row--grip.is-seq .s8-copy{display:grid}
 .s8-row--grip.is-seq .s8-copy-pane{grid-area:1 / 1}
 .s8-row--grip.is-seq .s8-copy-b{opacity:0;pointer-events:none;margin-top:0;padding-top:0;border-top:0}
+}
+
+/* ==========================================================================
+13.11 √2:1 设备专属：翻转屏底部控件缩小下移，3D 模型右移
+     仅 (1.36~1.47):1 生效；3:2、16:10、19.5:9 等比例保持原样。
+   ========================================================================== */
+@media (min-width:769px) and (min-aspect-ratio:1.36) and (max-aspect-ratio:1.47){
+.fl2-tabs{bottom:clamp(14px, 2.4vh, 24px);gap:10px}
+.fl2-tab{padding:10px 16px 11px;border-radius:14px;gap:2px}
+.fl2-tab b{font-size:18px}
+.fl2-tab span{font-size:11px}
+.fl2-range{max-width:420px;min-width:150px;gap:4px}
+.fl2-range input[type=range]{height:16px}
+.fl2-range input[type=range]::-webkit-slider-thumb{width:12px;height:12px;margin-top:-4px}
+.fl2-ticks{font-size:8px;height:11px}
+.fl2-ui{padding-bottom:clamp(6px, 1vh, 12px)}
+.fl2-stage{transform:translateX(2.5%)}
 }
